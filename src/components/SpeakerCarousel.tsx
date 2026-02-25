@@ -31,10 +31,10 @@ const SpeakerCard = ({ speaker, index }: { speaker: typeof speakers[0]; index: n
 
   return (
     <motion.div
-      className="flex-shrink-0 w-52 snap-center"
+      className="flex-shrink-0 w-52 snap-center will-change-transform"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.1 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
     >
       <div
         className="glass rounded-xl p-5 cursor-pointer transition-all duration-300 hover:scale-[1.03]"
@@ -94,7 +94,7 @@ const SpeakerCarousel = () => {
         </h2>
       </motion.div>
 
-      <div className="overflow-x-auto pb-4 scrollbar-hide">
+      <div className="overflow-x-auto pb-4 scrollbar-hide overscroll-x-contain">
         <div className="flex gap-4 px-6 w-max snap-x snap-mandatory">
           {speakers.map((speaker, i) => (
             <SpeakerCard key={speaker.name} speaker={speaker} index={i} />
