@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-type Step = "init" | "name" | "email" | "password" | "submitting" | "success" | "error";
+type Step = "init" | "name" | "email" | "event" | "team" | "password" | "submitting" | "success" | "error";
+
+const EVENTS = [
+  { id: "1", name: "Quantum Hackathon", limit: 4 },
+  { id: "2", name: "AI Ethics Panel", limit: 1 },
+  { id: "3", name: "Neural Sync Workshop", limit: 2 },
+  { id: "4", name: "Cyber Defense Sprint", limit: 3 },
+];
 
 interface TerminalLine {
   text: string;
@@ -139,7 +146,8 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
   const [inputValue, setInputValue] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [showMatrix, setShowMatrix] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<typeof EVENTS[0] | null>(null);
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
   const [shakeInput, setShakeInput] = useState(false);
   const [currentAutoType, setCurrentAutoType] = useState<{
     text: string;
@@ -183,7 +191,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
 
   // Focus input when ready
   useEffect(() => {
-    if (autoTypeDone && (step === "name" || step === "email" || step === "password")) {
+    if (autoTypeDone && (step === "name" || step === "email" || step === "event" || step === "team" || step === "password")) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [autoTypeDone, step]);
@@ -196,7 +204,8 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     setInputValue("");
     setName("");
     setEmail("");
-    setShowMatrix(false);
+    setSelectedEvent(null);
+    setTeamMembers([]);
     setCurrentAutoType(null);
     setAutoTypeDone(false);
 
@@ -254,11 +263,47 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       addLine(`> ${val}`, "green");
       setEmail(val);
       setInputValue("");
-      setStep("password");
-      setTimeout(
-        () => startAutoType("> ENTER ENCRYPTION_KEY (Password):", "green"),
-        300
-      );
+      setStep("event");
+      addLine("> AVAILABLE EVENTS:", "dim");
+      EVENTS.forEach(ev => addLine(`  [${ev.id}] ${ev.name} (Max: ${ev.limit})`, "cyan"));
+      setTimeout(() => startAutoType("> SELECT_EVENT_ID:", "green"), 300);
+    } else if (step === "event") {
+      const ev = EVENTS.find(e => e.id === val);
+      if (!ev) {
+        triggerError("INVALID EVENT ID. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${ev.name}`, "green");
+      setSelectedEvent(ev);
+      setInputValue("");
+      if (ev.limit > 1) {
+        setStep("team");
+        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (1/${ev.limit - 1}) OR TYPE 'SKIP':`, "green"), 300);
+      } else {
+        setStep("password");
+        setTimeout(() => startAutoType("> ENTER ENCRYPTION_KEY (Password):", "green"), 300);
+      }
+    } else if (step === "team") {
+      const normalizedVal = val.toLowerCase();
+      if (normalizedVal === 'skip' || normalizedVal === 'done') {
+        addLine(normalizedVal === 'skip' ? "> SKIPPED TEAM ADDITION." : "> TEAM FINALIZED.", "dim");
+        setInputValue("");
+        setStep("password");
+        setTimeout(() => startAutoType("> ENTER ENCRYPTION_KEY (Password):", "green"), 300);
+        return;
+      }
+
+      const newMembers = [...teamMembers, val];
+      addLine(`+ ${val}`, "cyan");
+      setTeamMembers(newMembers);
+      setInputValue("");
+
+      if (newMembers.length < (selectedEvent?.limit || 1) - 1) {
+        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (${newMembers.length + 1}/${(selectedEvent?.limit || 1) - 1}) OR TYPE 'DONE':`, "green"), 300);
+      } else {
+        setStep("password");
+        setTimeout(() => startAutoType("> MAX TEAM CAPACITY REACHED. ENTER ENCRYPTION_KEY (Password):", "green"), 300);
+      }
     } else if (step === "password") {
       if (val.length < 4) {
         triggerError("OVERRIDE FAILED. TRY AGAIN.");
@@ -276,19 +321,22 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
           addLine("> VERIFYING CREDENTIALS...", "dim");
           setTimeout(() => {
             // Success!
-            setShowMatrix(true);
-            setTimeout(() => {
-              setStep("success");
-              addLine("> ACCESS GRANTED. WELCOME TO NEXUS.", "cyan");
-              addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
-            }, 1500);
+            setStep("success");
+            addLine("> ACCESS GRANTED. WELCOME TO NEXUS.", "cyan");
+            addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
+            if (selectedEvent) {
+              addLine(`> EVENT: ${selectedEvent.name.toUpperCase()}`, "dim");
+            }
+            if (teamMembers.length > 0) {
+              addLine(`> TEAM: ${teamMembers.join(", ").toUpperCase()}`, "dim");
+            }
           }, 800);
         }, 700);
       }, 600);
     }
   };
 
-  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "password"].includes(step);
+  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "event", "team", "password"].includes(step);
 
   return (
     <AnimatePresence>
@@ -302,9 +350,6 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
         >
           {/* Scanlines */}
           <Scanlines />
-
-          {/* Matrix rain on success */}
-          {showMatrix && <MatrixRain />}
 
           {/* Header bar */}
           <div className="relative z-20 flex items-center justify-between px-4 py-3 border-b border-border">
@@ -381,6 +426,10 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                         ? "type_your_name"
                         : step === "email"
                         ? "your@email.com"
+                        : step === "event"
+                        ? "enter_id"
+                        : step === "team"
+                        ? "member_name"
                         : "••••••••"
                     }
                     style={
@@ -398,7 +447,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1 }}
+                  transition={{ duration: 0.2 }}
                   className="mt-6"
                 >
                   <button

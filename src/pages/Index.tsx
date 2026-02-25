@@ -6,6 +6,7 @@ import HeroScreen from "@/components/HeroScreen";
 import MissionBriefing from "@/components/MissionBriefing";
 import AboutSection from "@/components/AboutSection";
 import SpeakerCarousel from "@/components/SpeakerCarousel";
+import TeamSection from "@/components/TeamSection";
 import ScheduleTimeline from "@/components/ScheduleTimeline";
 import TerminalFooter from "@/components/TerminalFooter";
 
@@ -34,6 +35,7 @@ const Index = () => {
                 <div id="speakers">
                   <SpeakerCarousel />
                 </div>
+                <TeamSection />
                 <div id="schedule">
                   <ScheduleTimeline />
                 </div>

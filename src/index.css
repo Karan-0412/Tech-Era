@@ -68,6 +68,7 @@
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
     overflow-x: hidden;
+    text-rendering: optimizeSpeed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -94,9 +95,10 @@
 @layer utilities {
   .glass {
     background: hsl(var(--glass));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--glass-border));
+    will-change: transform, opacity;
   }
 
   .glow-cyan {
@@ -110,13 +112,13 @@
   }
 
   .text-glow-cyan {
-    text-shadow: 0 0 10px hsl(var(--neon-cyan) / 0.8), 0 0 40px hsl(var(--neon-cyan) / 0.3);
+    text-shadow: 0 0 8px hsl(var(--neon-cyan) / 0.6);
   }
   .text-glow-magenta {
-    text-shadow: 0 0 10px hsl(var(--neon-magenta) / 0.8), 0 0 40px hsl(var(--neon-magenta) / 0.3);
+    text-shadow: 0 0 8px hsl(var(--neon-magenta) / 0.6);
   }
   .text-glow-green {
-    text-shadow: 0 0 10px hsl(var(--neon-green) / 0.8), 0 0 40px hsl(var(--neon-green) / 0.3);
+    text-shadow: 0 0 8px hsl(var(--neon-green) / 0.6);
   }
 
   .neon-line {
@@ -165,5 +167,10 @@
 
   .animate-typing-cursor {
     animation: typing-cursor 1s step-end infinite;
+  }
+
+  #speakers, #schedule, section {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
   }
 }
