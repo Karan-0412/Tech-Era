@@ -613,10 +613,15 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                   className="mt-6"
                 >
                   <button
-                    onClick={onClose}
-                    className="font-mono text-xs text-primary/70 hover:text-primary transition-colors tracking-wider border border-primary/20 px-4 py-2 rounded hover:bg-primary/5"
+                    onClick={() => {
+                      onClose();
+                      setTimeout(() => {
+                        window.location.href = "/";
+                      }, 300);
+                    }}
+                    className="font-mono text-xs text-accent text-glow-green hover:text-accent transition-colors tracking-wider border border-accent/40 px-4 py-2 rounded hover:bg-accent/10"
                   >
-                    {">"} DISCONNECT FROM MAINFRAME
+                    {">"} SUBMIT & SAVE
                   </button>
                 </motion.div>
               )}
