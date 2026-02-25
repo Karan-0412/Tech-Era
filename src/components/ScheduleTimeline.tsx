@@ -1,16 +1,6 @@
-import { useRef } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-
-const schedule = [
-  { time: "09:00", title: "GATES OPEN", desc: "Registration & neural sync", day: "DAY 1" },
-  { time: "10:00", title: "KEYNOTE", desc: "The Future of AGI — Dr. Yuki Tanaka", day: "DAY 1" },
-  { time: "13:00", title: "WORKSHOP", desc: "Building with Quantum APIs", day: "DAY 1" },
-  { time: "16:00", title: "PANEL", desc: "Ethics in AI: The Next Frontier", day: "DAY 1" },
-  { time: "09:00", title: "HACKATHON BEGINS", desc: "48-hour build sprint kicks off", day: "DAY 2" },
-  { time: "14:00", title: "DEEP DIVE", desc: "Zero-Knowledge Proofs in Practice", day: "DAY 2" },
-  { time: "18:00", title: "AFTERPARTY", desc: "Neon Night — Live DJ & networking", day: "DAY 2" },
-  { time: "15:00", title: "DEMO DAY", desc: "Hackathon finalists present", day: "DAY 3" },
-];
+import { useRef, useState } from "react";
+import { motion, useInView, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { EVENTS } from "@/lib/events";
 
 const ScheduleItem = ({ item, index }: { item: typeof schedule[0]; index: number }) => {
   const ref = useRef(null);
@@ -71,6 +61,10 @@ const ScheduleTimeline = () => {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
   const glowHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const [selectedEventId, setSelectedEventId] = useState<string>(EVENTS[0].id);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const selectedEvent = EVENTS.find(e => e.id === selectedEventId) || EVENTS[0];
 
   return (
     <section className="py-24 px-6" ref={containerRef}>
@@ -78,7 +72,7 @@ const ScheduleTimeline = () => {
         ref={ref}
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
-        className="text-center mb-16"
+        className="text-center mb-8"
       >
         <p className="font-mono text-xs text-accent tracking-[0.4em] mb-3">
           // CIRCUIT_BOARD
@@ -87,6 +81,55 @@ const ScheduleTimeline = () => {
           EVENT <span className="text-accent text-glow-green">SCHEDULE</span>
         </h2>
       </motion.div>
+
+      {/* Event Dropdown Menu */}
+      <div className="max-w-md mx-auto mb-8 relative">
+        <div className="relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="w-full glass rounded-lg px-4 py-3 border border-primary/30 hover:border-primary/50 transition-colors flex items-center justify-between font-mono text-sm text-foreground"
+          >
+            <span>{selectedEvent.name}</span>
+            <motion.span
+              animate={{ rotate: dropdownOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-primary"
+            >
+              ▼
+            </motion.span>
+          </button>
+
+          <AnimatePresence>
+            {dropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute top-full left-0 right-0 mt-2 glass rounded-lg border border-primary/30 overflow-hidden z-50"
+              >
+                {EVENTS.map((event, idx) => (
+                  <motion.button
+                    key={event.id}
+                    onClick={() => {
+                      setSelectedEventId(event.id);
+                      setDropdownOpen(false);
+                    }}
+                    className={`w-full px-4 py-3 font-mono text-sm text-left border-b border-primary/10 hover:bg-primary/10 transition-colors ${
+                      selectedEventId === event.id ? "bg-primary/20 text-accent text-glow-cyan" : "text-foreground"
+                    } ${idx === EVENTS.length - 1 ? "border-b-0" : ""}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{event.name}</span>
+                      <span className="text-[10px] text-muted-foreground">Max: {event.limit}</span>
+                    </div>
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
 
       <div className="max-w-md mx-auto relative">
         {/* Glowing line behind */}
@@ -97,11 +140,20 @@ const ScheduleTimeline = () => {
           />
         </div>
 
-        <div className="space-y-0">
-          {schedule.map((item, i) => (
-            <ScheduleItem key={`${item.day}-${item.time}`} item={item} index={i} />
-          ))}
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedEventId}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-0"
+          >
+            {selectedEvent.schedule.map((item, i) => (
+              <ScheduleItem key={`${item.day}-${item.time}`} item={item} index={i} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );

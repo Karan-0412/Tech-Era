@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { EVENTS } from "@/lib/events";
 
 type Step = "init" | "name" | "email" | "phone" | "event" | "team_name" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
 
@@ -10,13 +11,6 @@ interface TeamMember {
   email: string;
   phone: string;
 }
-
-const EVENTS = [
-  { id: "1", name: "Quantum Hackathon", limit: 4 },
-  { id: "2", name: "AI Ethics Panel", limit: 1 },
-  { id: "3", name: "Neural Sync Workshop", limit: 2 },
-  { id: "4", name: "Cyber Defense Sprint", limit: 3 },
-];
 
 interface TerminalLine {
   text: string;
