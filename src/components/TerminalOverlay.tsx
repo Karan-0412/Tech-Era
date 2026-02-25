@@ -139,7 +139,6 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
   const [inputValue, setInputValue] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [showMatrix, setShowMatrix] = useState(false);
   const [shakeInput, setShakeInput] = useState(false);
   const [currentAutoType, setCurrentAutoType] = useState<{
     text: string;
@@ -196,7 +195,6 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     setInputValue("");
     setName("");
     setEmail("");
-    setShowMatrix(false);
     setCurrentAutoType(null);
     setAutoTypeDone(false);
 
@@ -276,12 +274,9 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
           addLine("> VERIFYING CREDENTIALS...", "dim");
           setTimeout(() => {
             // Success!
-            setShowMatrix(true);
-            setTimeout(() => {
-              setStep("success");
-              addLine("> ACCESS GRANTED. WELCOME TO NEXUS.", "cyan");
-              addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
-            }, 1500);
+            setStep("success");
+            addLine("> ACCESS GRANTED. WELCOME TO NEXUS.", "cyan");
+            addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
           }, 800);
         }, 700);
       }, 600);
@@ -302,9 +297,6 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
         >
           {/* Scanlines */}
           <Scanlines />
-
-          {/* Matrix rain on success */}
-          {showMatrix && <MatrixRain />}
 
           {/* Header bar */}
           <div className="relative z-20 flex items-center justify-between px-4 py-3 border-b border-border">
@@ -398,7 +390,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1 }}
+                  transition={{ duration: 0.2 }}
                   className="mt-6"
                 >
                   <button
