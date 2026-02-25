@@ -172,7 +172,7 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
         </motion.div>
 
         {/* ── Quick Actions Grid ──────────────── */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <QuickAction
             icon="◈"
             label="DIRECTORY"
@@ -188,17 +188,24 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
             onClick={() => scrollTo("schedule")}
           />
           <QuickAction
+            icon="✚"
+            label="TEAM"
+            sublabel="Add Node"
+            delay={1.5}
+            onClick={() => scrollTo("team")}
+          />
+          <QuickAction
             icon="◇"
             label="LOCATION"
             sublabel="Neo Tokyo"
-            delay={1.5}
+            delay={1.65}
           />
           <QuickAction
             icon="▶"
             label="INITIATE"
             sublabel="Get Tickets"
             highlighted
-            delay={1.65}
+            delay={1.8}
           />
         </div>
       </div>

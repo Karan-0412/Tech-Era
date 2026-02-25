@@ -51,10 +51,14 @@ const TerminalFooter = () => {
         {/* Footer links */}
         <div className="mt-8 flex flex-col items-center gap-3">
           <div className="flex gap-6">
-            {["TWITTER", "DISCORD", "GITHUB"].map((link) => (
+            {["TWITTER", "DISCORD", "GITHUB", "TEAM"].map((link) => (
               <a
                 key={link}
-                href="#"
+                href={link === "TEAM" ? "#team" : "#"}
+                onClick={link === "TEAM" ? (e) => {
+                  e.preventDefault();
+                  document.getElementById("team")?.scrollIntoView({ behavior: "smooth" });
+                } : undefined}
                 className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors tracking-widest"
               >
                 {link}
