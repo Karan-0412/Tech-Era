@@ -98,20 +98,6 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             <div className="absolute inset-0 rounded-lg bg-primary/5 blur-xl group-hover:bg-primary/10 transition-all" />
           </motion.button>
 
-          {/* Scroll indicator */}
-          <motion.div
-            className="absolute bottom-8 flex flex-col items-center gap-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-          >
-            <span className="font-mono text-[10px] text-muted-foreground tracking-widest">SCROLL</span>
-            <motion.div
-              className="w-px h-8 bg-gradient-to-b from-primary/60 to-transparent"
-              animate={{ scaleY: [1, 0.5, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </motion.div>
         </section>
       ) : (
         /* ── Blast Door Transition ────────────────────── */
