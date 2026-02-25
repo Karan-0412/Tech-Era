@@ -11,6 +11,7 @@ interface TeamMember {
 interface RegistrationData {
   userName: string;
   userEmail: string;
+  userPhone: string;
   selectedEvent: { id: string; name: string; limit: number } | null;
   teamName: string;
   teamMembers: TeamMember[];
@@ -72,6 +73,40 @@ const TeamSection = () => {
       </motion.div>
 
       <div className="grid gap-4">
+        <motion.div
+          layout
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass rounded-xl p-5 border border-accent/20 hover:border-accent/40 transition-colors bg-accent/5"
+        >
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center font-mono text-accent border border-accent/30">
+                {registrationData.userName.charAt(0)}
+              </div>
+              <div>
+                <h3 className="font-mono text-sm font-bold text-foreground">{registrationData.userName}</h3>
+                <p className="font-mono text-[10px] text-accent/70 tracking-widest">COORDINATOR</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-accent/10">
+              <div>
+                <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Email</p>
+                <p className="font-mono text-[10px] text-foreground truncate">{registrationData.userEmail}</p>
+              </div>
+              <div>
+                <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Phone</p>
+                <p className="font-mono text-[10px] text-foreground">{registrationData.userPhone}</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="text-center py-4">
+          <p className="font-mono text-[10px] text-muted-foreground/60">// TEAM MEMBERS</p>
+        </div>
+
         <AnimatePresence mode="popover">
           {registrationData.teamMembers.map((member, idx) => (
             <motion.div

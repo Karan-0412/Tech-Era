@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
-type Step = "init" | "name" | "email" | "event" | "team_name" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
+type Step = "init" | "name" | "email" | "phone" | "event" | "team_name" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
 
 interface TeamMember {
   uid: string;
@@ -155,6 +155,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
   const [inputValue, setInputValue] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<typeof EVENTS[0] | null>(null);
   const [teamName, setTeamName] = useState("");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -203,7 +204,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
 
   // Focus input when ready
   useEffect(() => {
-    if (autoTypeDone && (step === "name" || step === "email" || step === "event" || step === "team_name" || step === "team_uid" || step === "team_member_name" || step === "team_member_email" || step === "team_member_phone" || step === "team_review" || step === "password")) {
+    if (autoTypeDone && (step === "name" || step === "email" || step === "phone" || step === "event" || step === "team_name" || step === "team_uid" || step === "team_member_name" || step === "team_member_email" || step === "team_member_phone" || step === "team_review" || step === "password")) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [autoTypeDone, step]);
@@ -216,6 +217,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     setInputValue("");
     setName("");
     setEmail("");
+    setPhone("");
     setTeamName("");
     setSelectedEvent(null);
     setTeamMembers([]);
@@ -277,6 +279,16 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       }
       addLine(`> ${val}`, "green");
       setEmail(val);
+      setInputValue("");
+      setStep("phone");
+      setTimeout(() => startAutoType("> ENTER YOUR PHONE_NUMBER:", "green"), 300);
+    } else if (step === "phone") {
+      if (val.length < 7) {
+        triggerError("INVALID PHONE. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${val}`, "green");
+      setPhone(val);
       setInputValue("");
       setStep("event");
       addLine("> AVAILABLE EVENTS:", "dim");
@@ -402,6 +414,12 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
             setStep("success");
             addLine("> ACCESS GRANTED. WELCOME TO NEXUS.", "cyan");
             addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
+            if (email) {
+              addLine(`> EMAIL: ${email}`, "dim");
+            }
+            if (phone) {
+              addLine(`> PHONE: ${phone}`, "dim");
+            }
             if (selectedEvent) {
               addLine(`> EVENT: ${selectedEvent.name.toUpperCase()}`, "dim");
             }
@@ -416,6 +434,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
             const registrationData = {
               userName: name,
               userEmail: email,
+              userPhone: phone,
               selectedEvent: selectedEvent,
               teamName: teamName,
               teamMembers: teamMembers,
@@ -440,7 +459,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     }
   };
 
-  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "event", "team_name", "team_uid", "team_member_name", "team_member_email", "team_member_phone", "team_review", "password"].includes(step);
+  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "phone", "event", "team_name", "team_uid", "team_member_name", "team_member_email", "team_member_phone", "team_review", "password"].includes(step);
 
   return (
     <AnimatePresence>
@@ -557,6 +576,8 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                         ? "type_your_name"
                         : step === "email"
                         ? "your@email.com"
+                        : step === "phone"
+                        ? "+XX XXXXX-XXXXX"
                         : step === "event"
                         ? "enter_id"
                         : step === "team_name"
