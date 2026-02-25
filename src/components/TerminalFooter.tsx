@@ -1,30 +1,11 @@
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import TerminalOverlay from "./TerminalOverlay";
 
 const TerminalFooter = () => {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [output, setOutput] = useState<string[]>([
-    "nexus@mainframe:~$ _awaiting_input",
-  ]);
+  const [overlayOpen, setOverlayOpen] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setOutput((prev) => [
-      ...prev,
-      `> register --email ${email}`,
-      "Encrypting payload...",
-      "Transmitting to mainframe...",
-      "✓ NODE REGISTERED SUCCESSFULLY",
-      `Welcome to NEXUS 2026, ${email.split("@")[0]}.`,
-    ]);
-    setSubmitted(true);
-    setEmail("");
-  };
 
   return (
     <footer className="py-16 px-6" ref={ref}>
@@ -54,44 +35,16 @@ const TerminalFooter = () => {
           </div>
 
           {/* Terminal body */}
-          <div className="p-4 font-mono text-xs min-h-[160px]">
-            {output.map((line, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: i * 0.05 }}
-                className={
-                  line.startsWith("✓")
-                    ? "text-neon-green text-glow-green"
-                    : line.startsWith(">")
-                    ? "text-primary"
-                    : "text-muted-foreground"
-                }
-              >
-                {line}
-              </motion.div>
-            ))}
-
-            {!submitted && (
-              <form onSubmit={handleSubmit} className="mt-3 flex items-center gap-2">
-                <span className="text-primary">$</span>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="enter_your@email.com"
-                  className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground/50 font-mono text-xs"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="px-3 py-1 rounded border border-primary/30 text-primary text-[10px] hover:bg-primary/10 transition-colors tracking-wider"
-                >
-                  EXECUTE
-                </button>
-              </form>
-            )}
+          <div className="p-4 font-mono text-xs min-h-[120px] flex flex-col items-center justify-center gap-4">
+            <div className="text-muted-foreground text-center">
+              <p>nexus@mainframe:~$ _awaiting_input</p>
+            </div>
+            <button
+              onClick={() => setOverlayOpen(true)}
+              className="px-6 py-2.5 rounded border border-primary/30 text-primary text-xs hover:bg-primary/10 transition-colors tracking-[0.3em] animate-pulse-glow font-mono"
+            >
+              INITIALIZE CONNECTION
+            </button>
           </div>
         </div>
 
@@ -113,6 +66,9 @@ const TerminalFooter = () => {
           </p>
         </div>
       </motion.div>
+
+      {/* Full-screen terminal overlay */}
+      <TerminalOverlay open={overlayOpen} onClose={() => setOverlayOpen(false)} />
     </footer>
   );
 };
