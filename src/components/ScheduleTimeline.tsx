@@ -2,7 +2,24 @@ import { useRef, useState } from "react";
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { EVENTS } from "@/lib/events";
 
-const ScheduleItem = ({ item, index }: { item: typeof schedule[0]; index: number }) => {
+interface ScheduleItemType {
+  time: string;
+  title: string;
+  desc: string;
+  day: string;
+}
+
+const ScheduleItem = ({
+  item,
+  index,
+  scheduleLength,
+  previousItem
+}: {
+  item: ScheduleItemType;
+  index: number;
+  scheduleLength: number;
+  previousItem?: ScheduleItemType;
+}) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-30px" });
 
@@ -27,7 +44,7 @@ const ScheduleItem = ({ item, index }: { item: typeof schedule[0]; index: number
           } : {}}
           transition={{ duration: 1, delay: 0.3 }}
         />
-        {index < schedule.length - 1 && (
+        {index < scheduleLength - 1 && (
           <motion.div
             className="w-px h-16 bg-gradient-to-b from-primary/40 to-transparent"
             initial={{ scaleY: 0 }}
@@ -42,7 +59,7 @@ const ScheduleItem = ({ item, index }: { item: typeof schedule[0]; index: number
       <div className="glass rounded-lg p-4 flex-1 mb-2">
         <div className="flex items-center gap-2 mb-1">
           <span className="font-mono text-xs text-primary">{item.time}</span>
-          {item.day && index === 0 || (index > 0 && schedule[index - 1].day !== item.day) ? (
+          {item.day && (index === 0 || (previousItem && previousItem.day !== item.day)) ? (
             <span className="font-mono text-[9px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
               {item.day}
             </span>
@@ -150,7 +167,13 @@ const ScheduleTimeline = () => {
             className="space-y-0"
           >
             {selectedEvent.schedule.map((item, i) => (
-              <ScheduleItem key={`${item.day}-${item.time}`} item={item} index={i} />
+              <ScheduleItem
+                key={`${item.day}-${item.time}`}
+                item={item}
+                index={i}
+                scheduleLength={selectedEvent.schedule.length}
+                previousItem={i > 0 ? selectedEvent.schedule[i - 1] : undefined}
+              />
             ))}
           </motion.div>
         </AnimatePresence>
