@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
-type Step = "init" | "name" | "email" | "event" | "team" | "password" | "submitting" | "success" | "error";
+type Step = "init" | "name" | "email" | "event" | "team_name" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
+
+interface TeamMember {
+  uid: string;
+  name: string;
+  email: string;
+  phone: string;
+}
 
 const EVENTS = [
   { id: "1", name: "Quantum Hackathon", limit: 4 },
@@ -141,13 +149,17 @@ const TypingLine = ({
 
 /* ── Main overlay ───────────────────────────────────── */
 const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
+  const { toast } = useToast();
   const [step, setStep] = useState<Step>("init");
   const [lines, setLines] = useState<TerminalLine[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<typeof EVENTS[0] | null>(null);
-  const [teamMembers, setTeamMembers] = useState<string[]>([]);
+  const [teamName, setTeamName] = useState("");
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [currentMemberData, setCurrentMemberData] = useState({ uid: "", name: "", email: "", phone: "" });
+  const [memberFieldStep, setMemberFieldStep] = useState<"uid" | "name" | "email" | "phone">("uid");
   const [shakeInput, setShakeInput] = useState(false);
   const [currentAutoType, setCurrentAutoType] = useState<{
     text: string;
@@ -191,7 +203,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
 
   // Focus input when ready
   useEffect(() => {
-    if (autoTypeDone && (step === "name" || step === "email" || step === "event" || step === "team" || step === "password")) {
+    if (autoTypeDone && (step === "name" || step === "email" || step === "event" || step === "team_name" || step === "team_uid" || step === "team_member_name" || step === "team_member_email" || step === "team_member_phone" || step === "team_review" || step === "password")) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [autoTypeDone, step]);
@@ -204,8 +216,11 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     setInputValue("");
     setName("");
     setEmail("");
+    setTeamName("");
     setSelectedEvent(null);
     setTeamMembers([]);
+    setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
+    setMemberFieldStep("uid");
     setCurrentAutoType(null);
     setAutoTypeDone(false);
 
@@ -277,32 +292,95 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       setSelectedEvent(ev);
       setInputValue("");
       if (ev.limit > 1) {
-        setStep("team");
-        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (1/${ev.limit - 1}) OR TYPE 'SKIP':`, "green"), 300);
+        setStep("team_name");
+        setTimeout(() => startAutoType("> ENTER TEAM_NAME:", "green"), 300);
       } else {
         setStep("password");
         setTimeout(() => startAutoType("> ENTER ENCRYPTION_KEY (Password):", "green"), 300);
       }
-    } else if (step === "team") {
+    } else if (step === "team_name") {
+      if (val.length < 2 || val.length > 50) {
+        triggerError("OVERRIDE FAILED. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${val}`, "green");
+      setTeamName(val);
+      setInputValue("");
+      setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
+      setMemberFieldStep("uid");
+      setStep("team_uid");
+      setTimeout(() => startAutoType(`> ADD TEAM MEMBER (1/${(selectedEvent?.limit || 1) - 1}):`, "green"), 300);
+      setTimeout(() => startAutoType(`> ENTER MEMBER_UID:`, "green"), 600);
+    } else if (step === "team_uid") {
+      if (val.length < 2) {
+        triggerError("INVALID UID. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${val}`, "green");
+      setCurrentMemberData(prev => ({ ...prev, uid: val }));
+      setInputValue("");
+      setMemberFieldStep("name");
+      setStep("team_member_name");
+      setTimeout(() => startAutoType("> ENTER MEMBER_NAME:", "green"), 300);
+    } else if (step === "team_member_name") {
+      if (val.length < 2 || val.length > 50) {
+        triggerError("OVERRIDE FAILED. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${val}`, "green");
+      setCurrentMemberData(prev => ({ ...prev, name: val }));
+      setInputValue("");
+      setMemberFieldStep("email");
+      setStep("team_member_email");
+      setTimeout(() => startAutoType("> ENTER MEMBER_EMAIL:", "green"), 300);
+    } else if (step === "team_member_email") {
+      if (!validateEmail(val)) {
+        triggerError("INVALID EMAIL. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${val}`, "green");
+      setCurrentMemberData(prev => ({ ...prev, email: val }));
+      setInputValue("");
+      setMemberFieldStep("phone");
+      setStep("team_member_phone");
+      setTimeout(() => startAutoType("> ENTER MEMBER_PHONE:", "green"), 300);
+    } else if (step === "team_member_phone") {
+      if (val.length < 7) {
+        triggerError("INVALID PHONE. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${val}`, "green");
+      const completedMember: TeamMember = { ...currentMemberData, phone: val };
+      setTeamMembers(prev => [...prev, completedMember]);
+      setInputValue("");
+
+      // Check if we need more members
+      if (teamMembers.length + 1 < (selectedEvent?.limit || 1) - 1) {
+        setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
+        setMemberFieldStep("uid");
+        setStep("team_uid");
+        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (${teamMembers.length + 2}/${(selectedEvent?.limit || 1) - 1}):`, "green"), 300);
+        setTimeout(() => startAutoType("> ENTER MEMBER_UID:", "green"), 600);
+      } else {
+        addLine("> TEAM MEMBERS COMPLETE.", "cyan");
+        setStep("team_review");
+        setTimeout(() => startAutoType("> REVIEW TEAM DETAILS BELOW. TYPE 'MODIFY' TO CHANGE OR 'CONFIRM' TO PROCEED:", "green"), 600);
+      }
+    } else if (step === "team_review") {
       const normalizedVal = val.toLowerCase();
-      if (normalizedVal === 'skip' || normalizedVal === 'done') {
-        addLine(normalizedVal === 'skip' ? "> SKIPPED TEAM ADDITION." : "> TEAM FINALIZED.", "dim");
+      if (normalizedVal === "confirm") {
+        addLine("> TEAM CONFIRMED.", "green");
         setInputValue("");
         setStep("password");
         setTimeout(() => startAutoType("> ENTER ENCRYPTION_KEY (Password):", "green"), 300);
-        return;
-      }
-
-      const newMembers = [...teamMembers, val];
-      addLine(`+ ${val}`, "cyan");
-      setTeamMembers(newMembers);
-      setInputValue("");
-
-      if (newMembers.length < (selectedEvent?.limit || 1) - 1) {
-        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (${newMembers.length + 1}/${(selectedEvent?.limit || 1) - 1}) OR TYPE 'DONE':`, "green"), 300);
-      } else {
+      } else if (normalizedVal === "modify") {
+        addLine("> OPENING MODIFICATION MODE...", "dim");
+        setInputValue("");
+        // For now, redirect to password. In a real app, you'd reopen editing.
         setStep("password");
-        setTimeout(() => startAutoType("> MAX TEAM CAPACITY REACHED. ENTER ENCRYPTION_KEY (Password):", "green"), 300);
+        setTimeout(() => startAutoType("> ENTER ENCRYPTION_KEY (Password):", "green"), 1000);
+      } else {
+        triggerError("INVALID COMMAND. TYPE 'CONFIRM' OR 'MODIFY'.");
       }
     } else if (step === "password") {
       if (val.length < 4) {
@@ -327,16 +405,42 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
             if (selectedEvent) {
               addLine(`> EVENT: ${selectedEvent.name.toUpperCase()}`, "dim");
             }
-            if (teamMembers.length > 0) {
-              addLine(`> TEAM: ${teamMembers.join(", ").toUpperCase()}`, "dim");
+            if (teamName) {
+              addLine(`> TEAM_NAME: ${teamName.toUpperCase()}`, "dim");
             }
+            if (teamMembers.length > 0) {
+              addLine(`> TEAM_MEMBERS: ${teamMembers.map(m => m.name).join(", ").toUpperCase()}`, "dim");
+            }
+
+            // Store registration data
+            const registrationData = {
+              userName: name,
+              userEmail: email,
+              selectedEvent: selectedEvent,
+              teamName: teamName,
+              teamMembers: teamMembers,
+              registeredAt: new Date().toISOString()
+            };
+            localStorage.setItem("nexusRegistration", JSON.stringify(registrationData));
+
+            // Show success toast
+            toast({
+              title: "Team Registered Successfully",
+              description: `Team "${teamName}" has been registered with ${teamMembers.length} member(s).`,
+              variant: "default",
+            });
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+              window.location.href = "/";
+            }, 3000);
           }, 800);
         }, 700);
       }, 600);
     }
   };
 
-  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "event", "team", "password"].includes(step);
+  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "event", "team_name", "team_uid", "team_member_name", "team_member_email", "team_member_phone", "team_review", "password"].includes(step);
 
   return (
     <AnimatePresence>
@@ -394,6 +498,33 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                 </motion.div>
               ))}
 
+              {/* Team review display */}
+              {step === "team_review" && teamMembers.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-4 space-y-2 border-l-2 border-primary/30 pl-3"
+                >
+                  <div className="text-primary text-glow-cyan">// TEAM_DETAILS</div>
+                  <div className="text-muted-foreground">TEAM_NAME: {teamName}</div>
+                  {teamMembers.map((member, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="text-cyan-400 space-y-1"
+                    >
+                      <div>  [MEMBER_{idx + 1}]</div>
+                      <div className="text-muted-foreground ml-4">UID: {member.uid}</div>
+                      <div className="text-muted-foreground ml-4">NAME: {member.name}</div>
+                      <div className="text-muted-foreground ml-4">EMAIL: {member.email}</div>
+                      <div className="text-muted-foreground ml-4">PHONE: {member.phone}</div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+
               {/* Currently auto-typing line */}
               {currentAutoType && (
                 <TypingLine
@@ -428,8 +559,18 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                         ? "your@email.com"
                         : step === "event"
                         ? "enter_id"
-                        : step === "team"
+                        : step === "team_name"
+                        ? "team_name"
+                        : step === "team_uid"
+                        ? "NEX-XXX"
+                        : step === "team_member_name"
                         ? "member_name"
+                        : step === "team_member_email"
+                        ? "member@email.com"
+                        : step === "team_member_phone"
+                        ? "+XX XXXXX-XXXXX"
+                        : step === "team_review"
+                        ? "confirm or modify"
                         : "••••••••"
                     }
                     style={
