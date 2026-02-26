@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { EVENTS } from "@/lib/events";
 
-type Step = "init" | "name" | "email" | "phone" | "event" | "team_name" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
+type Step = "init" | "name" | "email" | "phone" | "event" | "team_name" | "team_leader_uid" | "add_team_members_option" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
 
 interface TeamMember {
   uid: string;
@@ -152,6 +152,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
   const [phone, setPhone] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<typeof EVENTS[0] | null>(null);
   const [teamName, setTeamName] = useState("");
+  const [leaderUid, setLeaderUid] = useState("");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentMemberData, setCurrentMemberData] = useState({ uid: "", name: "", email: "", phone: "" });
   const [memberFieldStep, setMemberFieldStep] = useState<"uid" | "name" | "email" | "phone">("uid");
@@ -198,7 +199,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
 
   // Focus input when ready
   useEffect(() => {
-    if (autoTypeDone && (step === "name" || step === "email" || step === "phone" || step === "event" || step === "team_name" || step === "team_uid" || step === "team_member_name" || step === "team_member_email" || step === "team_member_phone" || step === "team_review" || step === "password")) {
+    if (autoTypeDone && (step === "name" || step === "email" || step === "phone" || step === "event" || step === "team_name" || step === "team_leader_uid" || step === "add_team_members_option" || step === "team_uid" || step === "team_member_name" || step === "team_member_email" || step === "team_member_phone" || step === "team_review" || step === "password")) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [autoTypeDone, step]);
@@ -213,6 +214,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     setEmail("");
     setPhone("");
     setTeamName("");
+    setLeaderUid("");
     setSelectedEvent(null);
     setTeamMembers([]);
     setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
@@ -312,11 +314,36 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       addLine(`> ${val}`, "green");
       setTeamName(val);
       setInputValue("");
-      setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
-      setMemberFieldStep("uid");
-      setStep("team_uid");
-      setTimeout(() => startAutoType(`> ADD TEAM MEMBER (1/${(selectedEvent?.limit || 1) - 1}):`, "green"), 300);
-      setTimeout(() => startAutoType(`> ENTER MEMBER_UID:`, "green"), 600);
+      setStep("team_leader_uid");
+      setTimeout(() => startAutoType("> ENTER LEADER_UID:", "green"), 300);
+    } else if (step === "team_leader_uid") {
+      if (val.length < 2) {
+        triggerError("INVALID UID. TRY AGAIN.");
+        return;
+      }
+      addLine(`> ${val}`, "green");
+      setLeaderUid(val);
+      setInputValue("");
+      setStep("add_team_members_option");
+      setTimeout(() => startAutoType(`> ADD TEAM MEMBERS? (yes/no):`, "green"), 300);
+    } else if (step === "add_team_members_option") {
+      const normalizedVal = val.toLowerCase().trim();
+      if (normalizedVal === "yes" || normalizedVal === "y") {
+        addLine("> TEAM MEMBERS MODE ENABLED.", "green");
+        setInputValue("");
+        setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
+        setMemberFieldStep("uid");
+        setStep("team_uid");
+        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (1/${(selectedEvent?.limit || 1) - 1}):`, "green"), 300);
+        setTimeout(() => startAutoType(`> ENTER MEMBER_UID:`, "green"), 600);
+      } else if (normalizedVal === "no" || normalizedVal === "n" || normalizedVal === "skip") {
+        addLine("> SKIPPED TEAM MEMBERS.", "green");
+        setInputValue("");
+        setStep("team_review");
+        setTimeout(() => startAutoType("> REVIEW TEAM DETAILS BELOW. TYPE 'CONFIRM' TO PROCEED:", "green"), 300);
+      } else {
+        triggerError("INVALID RESPONSE. TYPE 'YES' OR 'NO'.");
+      }
     } else if (step === "team_uid") {
       if (val.length < 2) {
         triggerError("INVALID UID. TRY AGAIN.");
@@ -419,9 +446,12 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
             }
             if (teamName) {
               addLine(`> TEAM_NAME: ${teamName.toUpperCase()}`, "dim");
+              addLine(`> LEADER_UID: ${leaderUid.toUpperCase()}`, "dim");
             }
             if (teamMembers.length > 0) {
               addLine(`> TEAM_MEMBERS: ${teamMembers.map(m => m.name).join(", ").toUpperCase()}`, "dim");
+            } else if (teamName) {
+              addLine(`> TEAM_MEMBERS: NONE (SOLO_MODE)`, "dim");
             }
 
             // Store registration data
@@ -431,15 +461,17 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
               userPhone: phone,
               selectedEvent: selectedEvent,
               teamName: teamName,
+              leaderUid: leaderUid,
               teamMembers: teamMembers,
               registeredAt: new Date().toISOString()
             };
             localStorage.setItem("nexusRegistration", JSON.stringify(registrationData));
 
             // Show success toast
+            const memberCount = teamMembers.length;
             toast({
               title: "Team Registered Successfully",
-              description: `Team "${teamName}" has been registered with ${teamMembers.length} member(s).`,
+              description: `Team "${teamName}" (Leader: ${leaderUid}) registered with ${memberCount} member${memberCount !== 1 ? 's' : ''}.`,
               variant: "default",
             });
 
@@ -454,7 +486,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     }
   };
 
-  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "phone", "event", "team_name", "team_uid", "team_member_name", "team_member_email", "team_member_phone", "team_review", "password"].includes(step);
+  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "phone", "event", "team_name", "team_leader_uid", "add_team_members_option", "team_uid", "team_member_name", "team_member_email", "team_member_phone", "team_review", "password"].includes(step);
 
   return (
     <AnimatePresence>
@@ -513,7 +545,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
               ))}
 
               {/* Team review display */}
-              {step === "team_review" && teamMembers.length > 0 && (
+              {step === "team_review" && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -521,21 +553,29 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                 >
                   <div className="text-primary text-glow-cyan">// TEAM_DETAILS</div>
                   <div className="text-muted-foreground">TEAM_NAME: {teamName}</div>
-                  {teamMembers.map((member, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="text-cyan-400 space-y-1"
-                    >
-                      <div>  [MEMBER_{idx + 1}]</div>
-                      <div className="text-muted-foreground ml-4">UID: {member.uid}</div>
-                      <div className="text-muted-foreground ml-4">NAME: {member.name}</div>
-                      <div className="text-muted-foreground ml-4">EMAIL: {member.email}</div>
-                      <div className="text-muted-foreground ml-4">PHONE: {member.phone}</div>
-                    </motion.div>
-                  ))}
+                  <div className="text-muted-foreground">LEADER_UID: {leaderUid}</div>
+                  {teamMembers.length > 0 ? (
+                    <>
+                      <div className="text-muted-foreground mt-2">MEMBERS: {teamMembers.length}</div>
+                      {teamMembers.map((member, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          className="text-cyan-400 space-y-1"
+                        >
+                          <div>  [MEMBER_{idx + 1}]</div>
+                          <div className="text-muted-foreground ml-4">UID: {member.uid}</div>
+                          <div className="text-muted-foreground ml-4">NAME: {member.name}</div>
+                          <div className="text-muted-foreground ml-4">EMAIL: {member.email}</div>
+                          <div className="text-muted-foreground ml-4">PHONE: {member.phone}</div>
+                        </motion.div>
+                      ))}
+                    </>
+                  ) : (
+                    <div className="text-muted-foreground">MEMBERS: NONE (SOLO_MODE)</div>
+                  )}
                 </motion.div>
               )}
 
@@ -577,6 +617,10 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                         ? "enter_id"
                         : step === "team_name"
                         ? "team_name"
+                        : step === "team_leader_uid"
+                        ? "NEX-XXX"
+                        : step === "add_team_members_option"
+                        ? "yes or no"
                         : step === "team_uid"
                         ? "NEX-XXX"
                         : step === "team_member_name"

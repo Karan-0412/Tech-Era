@@ -14,6 +14,7 @@ interface RegistrationData {
   userPhone: string;
   selectedEvent: { id: string; name: string; limit: number } | null;
   teamName: string;
+  leaderUid: string;
   teamMembers: TeamMember[];
   registeredAt: string;
 }
@@ -86,11 +87,11 @@ const TeamSection = () => {
               </div>
               <div>
                 <h3 className="font-mono text-sm font-bold text-foreground">{registrationData.userName}</h3>
-                <p className="font-mono text-[10px] text-accent/70 tracking-widest">COORDINATOR</p>
+                <p className="font-mono text-[10px] text-accent/70 tracking-widest">LEADER • {registrationData.leaderUid}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-accent/10">
+            <div className="grid grid-cols-3 gap-2 mt-2 pt-3 border-t border-accent/10">
               <div>
                 <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Email</p>
                 <p className="font-mono text-[10px] text-foreground truncate">{registrationData.userEmail}</p>
@@ -99,13 +100,19 @@ const TeamSection = () => {
                 <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Phone</p>
                 <p className="font-mono text-[10px] text-foreground">{registrationData.userPhone}</p>
               </div>
+              <div>
+                <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">UID</p>
+                <p className="font-mono text-[10px] text-foreground">{registrationData.leaderUid}</p>
+              </div>
             </div>
           </div>
         </motion.div>
 
-        <div className="text-center py-4">
-          <p className="font-mono text-[10px] text-muted-foreground/60">// TEAM MEMBERS</p>
-        </div>
+        {registrationData.teamMembers.length > 0 && (
+          <div className="text-center py-4">
+            <p className="font-mono text-[10px] text-muted-foreground/60">// TEAM MEMBERS ({registrationData.teamMembers.length})</p>
+          </div>
+        )}
 
         <AnimatePresence mode="popover">
           {registrationData.teamMembers.map((member, idx) => (
