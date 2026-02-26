@@ -443,9 +443,10 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
               variant: "default",
             });
 
-            // Redirect after 3 seconds
+            // Scroll to hero section after 3 seconds
             setTimeout(() => {
-              window.location.href = "/";
+              onClose();
+              window.scrollTo({ top: 0, behavior: "smooth" });
             }, 3000);
           }, 800);
         }, 700);
@@ -610,7 +611,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                     onClick={() => {
                       onClose();
                       setTimeout(() => {
-                        window.location.href = "/";
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }, 300);
                     }}
                     className="font-mono text-xs text-accent text-glow-green hover:text-accent transition-colors tracking-wider border border-accent/40 px-4 py-2 rounded hover:bg-accent/10"
