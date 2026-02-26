@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { EVENTS } from "@/lib/events";
 
-type Step = "init" | "name" | "email" | "phone" | "event" | "team_name" | "team_leader_uid" | "add_team_members_option" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
+type Step = "init" | "name" | "email" | "phone" | "event" | "team_name" | "team_leader_uid" | "team_uid" | "team_member_name" | "team_member_email" | "team_member_phone" | "team_review" | "password" | "submitting" | "success" | "error";
 
 interface TeamMember {
   uid: string;
@@ -199,7 +199,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
 
   // Focus input when ready
   useEffect(() => {
-    if (autoTypeDone && (step === "name" || step === "email" || step === "phone" || step === "event" || step === "team_name" || step === "team_leader_uid" || step === "add_team_members_option" || step === "team_uid" || step === "team_member_name" || step === "team_member_email" || step === "team_member_phone" || step === "team_review" || step === "password")) {
+    if (autoTypeDone && (step === "name" || step === "email" || step === "phone" || step === "event" || step === "team_name" || step === "team_leader_uid" || step === "team_uid" || step === "team_member_name" || step === "team_member_email" || step === "team_member_phone" || step === "team_review" || step === "password")) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [autoTypeDone, step]);
@@ -324,27 +324,38 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       addLine(`> ${val}`, "green");
       setLeaderUid(val);
       setInputValue("");
-      setStep("add_team_members_option");
-      setTimeout(() => startAutoType(`> ADD TEAM MEMBERS? (yes/no):`, "green"), 300);
-    } else if (step === "add_team_members_option") {
+      setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
+      setMemberFieldStep("uid");
+      setStep("team_uid");
+      setTimeout(() => startAutoType(`> ADD TEAM MEMBERS (0-${(selectedEvent?.limit || 1) - 1}):`, "green"), 300);
+      setTimeout(() => startAutoType(`> ENTER MEMBER_UID OR TYPE 'SKIP' TO CONTINUE:`, "green"), 600);
+    } else if (step === "team_uid") {
       const normalizedVal = val.toLowerCase().trim();
-      if (normalizedVal === "yes" || normalizedVal === "y") {
-        addLine("> TEAM MEMBERS MODE ENABLED.", "green");
-        setInputValue("");
+      // Handle yes/no response from "ADD MORE MEMBERS?" prompt
+      if (memberFieldStep === "uid" && (normalizedVal === "yes" || normalizedVal === "y")) {
         setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
         setMemberFieldStep("uid");
-        setStep("team_uid");
-        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (1/${(selectedEvent?.limit || 1) - 1}):`, "green"), 300);
-        setTimeout(() => startAutoType(`> ENTER MEMBER_UID:`, "green"), 600);
-      } else if (normalizedVal === "no" || normalizedVal === "n" || normalizedVal === "skip") {
+        setInputValue("");
+        setTimeout(() => startAutoType(`> ENTER MEMBER_UID:`, "green"), 300);
+        return;
+      } else if (memberFieldStep === "uid" && (normalizedVal === "no" || normalizedVal === "n")) {
+        addLine("> TEAM MEMBERS FINALIZED.", "green");
+        setInputValue("");
+        setStep("team_review");
+        setTimeout(() => startAutoType("> REVIEW TEAM DETAILS BELOW. TYPE 'CONFIRM' TO PROCEED:", "green"), 300);
+        return;
+      }
+
+      // Handle skip if they're entering their first member
+      if (normalizedVal === "skip" && teamMembers.length === 0) {
         addLine("> SKIPPED TEAM MEMBERS.", "green");
         setInputValue("");
         setStep("team_review");
         setTimeout(() => startAutoType("> REVIEW TEAM DETAILS BELOW. TYPE 'CONFIRM' TO PROCEED:", "green"), 300);
-      } else {
-        triggerError("INVALID RESPONSE. TYPE 'YES' OR 'NO'.");
+        return;
       }
-    } else if (step === "team_uid") {
+
+      // Handle UID input
       if (val.length < 2) {
         triggerError("INVALID UID. TRY AGAIN.");
         return;
@@ -384,20 +395,20 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       }
       addLine(`> ${val}`, "green");
       const completedMember: TeamMember = { ...currentMemberData, phone: val };
-      setTeamMembers(prev => [...prev, completedMember]);
+      const newMembersList = [...teamMembers, completedMember];
+      setTeamMembers(newMembersList);
       setInputValue("");
 
-      // Check if we need more members
-      if (teamMembers.length + 1 < (selectedEvent?.limit || 1) - 1) {
-        setCurrentMemberData({ uid: "", name: "", email: "", phone: "" });
-        setMemberFieldStep("uid");
+      // Ask if they want to add more members
+      const maxMembers = (selectedEvent?.limit || 1) - 1;
+      if (newMembersList.length < maxMembers) {
+        setTimeout(() => startAutoType(`> ADD MORE MEMBERS? (yes/no) [${newMembersList.length}/${maxMembers}]:`, "green"), 300);
         setStep("team_uid");
-        setTimeout(() => startAutoType(`> ADD TEAM MEMBER (${teamMembers.length + 2}/${(selectedEvent?.limit || 1) - 1}):`, "green"), 300);
-        setTimeout(() => startAutoType("> ENTER MEMBER_UID:", "green"), 600);
+        setMemberFieldStep("uid");
       } else {
-        addLine("> TEAM MEMBERS COMPLETE.", "cyan");
+        addLine("> MAX TEAM CAPACITY REACHED.", "cyan");
         setStep("team_review");
-        setTimeout(() => startAutoType("> REVIEW TEAM DETAILS BELOW. TYPE 'MODIFY' TO CHANGE OR 'CONFIRM' TO PROCEED:", "green"), 600);
+        setTimeout(() => startAutoType("> REVIEW TEAM DETAILS BELOW. TYPE 'CONFIRM' TO PROCEED:", "green"), 600);
       }
     } else if (step === "team_review") {
       const normalizedVal = val.toLowerCase();
@@ -486,7 +497,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
     }
   };
 
-  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "phone", "event", "team_name", "team_leader_uid", "add_team_members_option", "team_uid", "team_member_name", "team_member_email", "team_member_phone", "team_review", "password"].includes(step);
+  const showInput = autoTypeDone && !currentAutoType && ["name", "email", "phone", "event", "team_name", "team_leader_uid", "team_uid", "team_member_name", "team_member_email", "team_member_phone", "team_review", "password"].includes(step);
 
   return (
     <AnimatePresence>
@@ -619,10 +630,8 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                         ? "team_name"
                         : step === "team_leader_uid"
                         ? "NEX-XXX"
-                        : step === "add_team_members_option"
-                        ? "yes or no"
                         : step === "team_uid"
-                        ? "NEX-XXX"
+                        ? teamMembers.length > 0 ? "yes or no" : "NEX-XXX or skip"
                         : step === "team_member_name"
                         ? "member_name"
                         : step === "team_member_email"
@@ -630,7 +639,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
                         : step === "team_member_phone"
                         ? "+XX XXXXX-XXXXX"
                         : step === "team_review"
-                        ? "confirm or modify"
+                        ? "confirm"
                         : "••••••••"
                     }
                     style={
