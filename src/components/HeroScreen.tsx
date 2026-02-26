@@ -45,7 +45,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            March 15–17, 2026 • Neo Tokyo
+            March 15–17, 2026
           </motion.p>
 
           {/* Digital Clock */}

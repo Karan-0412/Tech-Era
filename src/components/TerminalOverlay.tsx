@@ -516,7 +516,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
           <div className="relative z-20 flex items-center justify-between px-4 py-3 border-b border-border">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-              <span className="font-mono text-[10px] text-accent tracking-[0.3em]">
+              <span className="font-mono text-[11px] text-accent tracking-[0.3em]">
                 NEXUS MAINFRAME v2.6.0
               </span>
             </div>
@@ -678,10 +678,10 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
 
           {/* Bottom status bar */}
           <div className="relative z-20 px-4 py-2 border-t border-border flex items-center justify-between">
-            <span className="font-mono text-[9px] text-muted-foreground/50">
+            <span className="font-mono text-[11px] text-muted-foreground/50">
               SECURE CHANNEL • AES-256 ENCRYPTED
             </span>
-            <span className="font-mono text-[9px] text-accent/40">
+            <span className="font-mono text-[11px] text-accent/40">
               {step === "success" ? "● CONNECTED" : "○ PENDING"}
             </span>
           </div>

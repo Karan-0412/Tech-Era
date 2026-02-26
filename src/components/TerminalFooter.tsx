@@ -29,7 +29,7 @@ const TerminalFooter = () => {
             <div className="w-2.5 h-2.5 rounded-full bg-destructive/60" />
             <div className="w-2.5 h-2.5 rounded-full bg-neon-green/40" />
             <div className="w-2.5 h-2.5 rounded-full bg-primary/40" />
-            <span className="ml-2 font-mono text-[10px] text-muted-foreground">
+            <span className="ml-2 font-mono text-[11px] text-muted-foreground">
               nexus@mainframe ~ register
             </span>
           </div>
@@ -59,13 +59,13 @@ const TerminalFooter = () => {
                   e.preventDefault();
                   document.getElementById("team")?.scrollIntoView({ behavior: "smooth" });
                 } : undefined}
-                className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors tracking-widest"
+                className="font-mono text-[11px] text-muted-foreground hover:text-primary transition-colors tracking-widest"
               >
                 {link}
               </a>
             ))}
           </div>
-          <p className="font-mono text-[9px] text-muted-foreground/50">
+          <p className="font-mono text-[11px] text-muted-foreground/50">
             © 2026 NEXUS PROTOCOL • ALL RIGHTS RESERVED
           </p>
         </div>

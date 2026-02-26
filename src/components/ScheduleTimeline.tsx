@@ -60,7 +60,7 @@ const ScheduleItem = ({
         <div className="flex items-center gap-2 mb-1">
           <span className="font-mono text-xs text-primary">{item.time}</span>
           {item.day && (index === 0 || (previousItem && previousItem.day !== item.day)) ? (
-            <span className="font-mono text-[9px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
               {item.day}
             </span>
           ) : null}
@@ -138,7 +138,7 @@ const ScheduleTimeline = () => {
                   >
                     <div className="flex items-center justify-between">
                       <span>{event.name}</span>
-                      <span className="text-[10px] text-muted-foreground">Max: {event.limit}</span>
+                      <span className="text-[11px] text-muted-foreground">Max: {event.limit}</span>
                     </div>
                   </motion.button>
                 ))}

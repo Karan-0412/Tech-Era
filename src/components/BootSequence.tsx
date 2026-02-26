@@ -48,7 +48,7 @@ const BootSequence = ({ onComplete }: { onComplete: () => void }) => {
           </motion.h1>
 
           {/* Boot lines */}
-          <div className="font-mono text-xs space-y-1">
+          <div className="font-mono text-sm space-y-1">
             {bootLines.slice(0, currentLine).map((line, i) => (
               <motion.div
                 key={i}

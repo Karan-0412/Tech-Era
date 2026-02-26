@@ -58,7 +58,7 @@ const SpeakerCard = ({ speaker, index }: { speaker: typeof speakers[0]; index: n
               <span className="inline-block w-1.5 h-3.5 bg-primary ml-0.5 animate-typing-cursor" />
             )}
           </h3>
-          <p className="font-sans text-xs text-muted-foreground mt-1">
+          <p className="font-sans text-sm text-muted-foreground mt-1">
             {speaker.role}
           </p>
         </div>
@@ -66,7 +66,7 @@ const SpeakerCard = ({ speaker, index }: { speaker: typeof speakers[0]; index: n
         {/* Status indicator */}
         <div className="flex items-center justify-center gap-1.5 mt-3">
           <div className={`w-1.5 h-1.5 rounded-full ${active ? "bg-neon-green" : "bg-muted-foreground/30"}`} />
-          <span className="font-mono text-[10px] text-muted-foreground">
+          <span className="font-mono text-[11px] text-muted-foreground">
             {active ? "CONNECTED" : "TAP TO CONNECT"}
           </span>
         </div>
@@ -86,7 +86,7 @@ const SpeakerCarousel = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         className="text-center mb-12 px-6"
       >
-        <p className="font-mono text-xs text-secondary tracking-[0.4em] mb-3">
+        <p className="font-mono text-sm text-secondary tracking-[0.4em] mb-3">
           // DIRECTORY
         </p>
         <h2 className="font-mono text-3xl sm:text-4xl font-bold text-foreground">

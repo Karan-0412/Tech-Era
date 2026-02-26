@@ -29,7 +29,7 @@ const StatusWidget = ({
       <div className={`w-1.5 h-1.5 rounded-full ${dotClass} animate-pulse`} />
       <div>
         <p className="font-mono text-[9px] text-muted-foreground tracking-widest">{label}</p>
-        <p className={`font-mono text-xs font-bold ${color === "cyan" ? "text-primary" : "text-accent"}`}>
+        <p className={`font-mono text-sm font-bold ${color === "cyan" ? "text-primary" : "text-accent"}`}>
           {value}
         </p>
       </div>
@@ -86,13 +86,13 @@ const QuickAction = ({
     >
       <span className="text-2xl">{icon}</span>
       <span
-        className={`font-mono text-[10px] tracking-[0.25em] ${
+        className={`font-mono text-[11.5px] tracking-[0.25em] ${
           highlighted ? "text-primary text-glow-cyan" : "text-foreground"
         }`}
       >
         {label}
       </span>
-      <span className="font-mono text-[8px] text-muted-foreground tracking-wider">{sublabel}</span>
+      <span className="font-mono text-[10px] text-muted-foreground tracking-wider">{sublabel}</span>
       {highlighted && (
         <motion.div
           className="absolute inset-0 rounded-xl"
@@ -145,14 +145,14 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
             <div className="w-2 h-2 rounded-full bg-destructive/60" />
             <div className="w-2 h-2 rounded-full bg-accent/40" />
             <div className="w-2 h-2 rounded-full bg-primary/40" />
-            <span className="ml-2 font-mono text-[9px] text-muted-foreground tracking-widest">
+            <span className="font-mono text-[11px] text-muted-foreground tracking-widest">
               MISSION_BRIEF.exe
             </span>
           </div>
 
           <div className="p-5 sm:p-6">
             {/* Typewriter headline */}
-            <p className="font-mono text-sm sm:text-base text-primary text-glow-cyan mb-4 leading-relaxed">
+            <p className="font-mono text-base sm:text-lg text-primary text-glow-cyan mb-4 leading-relaxed">
               {typedHeadline}
               {showCursor && <span className="animate-typing-cursor">▌</span>}
             </p>
@@ -162,7 +162,7 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2.5 }}
-              className="text-sm text-muted-foreground leading-relaxed"
+              className="text-base text-muted-foreground leading-relaxed"
             >
               The ultimate convergence of developers, designers, and disruptors.
               Three days of keynotes, workshops, and a 48-hour hackathon—pushing
@@ -172,14 +172,7 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
         </motion.div>
 
         {/* ── Quick Actions Grid ──────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <QuickAction
-            icon="◈"
-            label="DIRECTORY"
-            sublabel="Speakers"
-            delay={1.2}
-            onClick={() => scrollTo("speakers")}
-          />
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
           <QuickAction
             icon="⬡"
             label="PROTOCOL"
@@ -193,12 +186,6 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
             sublabel="Add Node"
             delay={1.5}
             onClick={() => scrollTo("team")}
-          />
-          <QuickAction
-            icon="◇"
-            label="LOCATION"
-            sublabel="Neo Tokyo"
-            delay={1.65}
           />
           <QuickAction
             icon="▶"
