@@ -68,8 +68,8 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            NEXUS
-            <span className="text-primary text-glow-cyan"> 2026</span>
+            TECH
+            <span className="text-primary text-glow-cyan"> ERA</span>
           </motion.h1>
 
           <motion.p
@@ -119,7 +119,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
           >
             <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary to-transparent" />
             <div className="h-full flex items-center justify-end pr-8">
-              <span className="font-mono text-6xl sm:text-8xl font-bold text-primary/10">N</span>
+              <span className="font-mono text-6xl sm:text-8xl font-bold text-primary/10">T</span>
             </div>
           </motion.div>
 
@@ -132,7 +132,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
           >
             <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary to-transparent" />
             <div className="h-full flex items-center justify-start pl-8">
-              <span className="font-mono text-6xl sm:text-8xl font-bold text-primary/10">X</span>
+              <span className="font-mono text-6xl sm:text-8xl font-bold text-primary/10">E</span>
             </div>
           </motion.div>
 

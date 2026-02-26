@@ -62,7 +62,7 @@ const MatrixRain = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const chars = "NEXUS01アイウエオカキクケコサシスセソ>_[]{}|/\\";
+    const chars = "APEXTECH01アイウエオカキクケコサシスセソ>_[]{}|/\\";
     const fontSize = 14;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array.from({ length: columns }, () => Math.random() * -100);
@@ -444,7 +444,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
           setTimeout(() => {
             // Success!
             setStep("success");
-            addLine("> ACCESS GRANTED. WELCOME TO NEXUS.", "cyan");
+            addLine("> ACCESS GRANTED. WELCOME TO TECH ERA.", "cyan");
             addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
             if (email) {
               addLine(`> EMAIL: ${email}`, "dim");
@@ -476,7 +476,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
               teamMembers: teamMembers,
               registeredAt: new Date().toISOString()
             };
-            localStorage.setItem("nexusRegistration", JSON.stringify(registrationData));
+            localStorage.setItem("techEraRegistration", JSON.stringify(registrationData));
 
             // Show success toast
             const memberCount = teamMembers.length;
@@ -517,7 +517,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
               <span className="font-mono text-[11px] text-accent tracking-[0.3em]">
-                NEXUS MAINFRAME v2.6.0
+                APEX MAINFRAME v3.0.0
               </span>
             </div>
             <button

@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const bootLines = [
-  "NEXUS_OS v2.026 INITIALIZING...",
+  "TECH_ERA_OS v3.0 INITIALIZING...",
+  "Syncing with Apex Mainframe...",
   "Loading neural interface...",
   "Scanning biometrics... [OK]",
-  "Connecting to mainframe...",
-  "Decrypting event protocols...",
+  "Connecting to global network...",
+  "Decrypting secure protocols...",
   "ACCESS GRANTED_",
 ];
 
@@ -44,7 +45,7 @@ const BootSequence = ({ onComplete }: { onComplete: () => void }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            NEXUS://2026
+            TECH://ERA
           </motion.h1>
 
           {/* Boot lines */}
