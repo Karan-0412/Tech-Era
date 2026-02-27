@@ -157,6 +157,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
   const [currentMemberData, setCurrentMemberData] = useState({ uid: "", name: "", email: "", phone: "" });
   const [memberFieldStep, setMemberFieldStep] = useState<"uid" | "name" | "email" | "phone">("uid");
   const [shakeInput, setShakeInput] = useState(false);
+  const [isSubmittingToSheets, setIsSubmittingToSheets] = useState(false);
   const [currentAutoType, setCurrentAutoType] = useState<{
     text: string;
     color: TerminalLine["color"];
@@ -437,63 +438,86 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       setStep("submitting");
 
       addLine("> ENCRYPTING PAYLOAD...", "dim");
-      setTimeout(() => {
-        addLine("> TRANSMITTING TO MAINFRAME...", "dim");
-        setTimeout(() => {
-          addLine("> VERIFYING CREDENTIALS...", "dim");
-          setTimeout(() => {
-            // Success!
-            setStep("success");
-            addLine("> ACCESS GRANTED. WELCOME TO TECH ERA.", "cyan");
-            addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
-            if (email) {
-              addLine(`> EMAIL: ${email}`, "dim");
-            }
-            if (phone) {
-              addLine(`> PHONE: ${phone}`, "dim");
-            }
-            if (selectedEvent) {
-              addLine(`> EVENT: ${selectedEvent.name.toUpperCase()}`, "dim");
-            }
-            if (teamName) {
-              addLine(`> TEAM_NAME: ${teamName.toUpperCase()}`, "dim");
-              addLine(`> LEADER_UID: ${leaderUid.toUpperCase()}`, "dim");
-            }
-            if (teamMembers.length > 0) {
-              addLine(`> TEAM_MEMBERS: ${teamMembers.map(m => m.name).join(", ").toUpperCase()}`, "dim");
-            } else if (teamName) {
-              addLine(`> TEAM_MEMBERS: NONE (SOLO_MODE)`, "dim");
-            }
 
-            // Store registration data
-            const registrationData = {
-              userName: name,
-              userEmail: email,
-              userPhone: phone,
-              selectedEvent: selectedEvent,
-              teamName: teamName,
-              leaderUid: leaderUid,
-              teamMembers: teamMembers,
-              registeredAt: new Date().toISOString()
-            };
-            localStorage.setItem("techEraRegistration", JSON.stringify(registrationData));
+      const submitData = async () => {
+        const registrationData = {
+          userName: name,
+          userEmail: email,
+          userPhone: phone,
+          selectedEvent: selectedEvent,
+          teamName: teamName,
+          leaderUid: leaderUid,
+          teamMembers: teamMembers,
+          registeredAt: new Date().toISOString()
+        };
 
-            // Show success toast
-            const memberCount = teamMembers.length;
-            toast({
-              title: "Team Registered Successfully",
-              description: `Team "${teamName}" (Leader: ${leaderUid}) registered with ${memberCount} member${memberCount !== 1 ? 's' : ''}.`,
-              variant: "default",
+        // Try to submit to Google Sheets if URL is provided
+        const appsScriptUrl = import.meta.env.VITE_GOOGLE_SHEET_APPS_SCRIPT_URL;
+        if (appsScriptUrl) {
+          setIsSubmittingToSheets(true);
+          try {
+            await fetch(appsScriptUrl, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(registrationData)
             });
+            addLine("> DATA_SYNCHRONIZED_WITH_SHEET.", "cyan");
+          } catch (e) {
+            console.error("Failed to sync with sheets", e);
+            addLine("> WARNING: SHEET_SYNC_FAILED. LOCAL_SAVE_ONLY.", "red");
+          } finally {
+            setIsSubmittingToSheets(false);
+          }
+        }
 
-            // Scroll to hero section after 3 seconds
+        setTimeout(() => {
+          addLine("> TRANSMITTING TO MAINFRAME...", "dim");
+          setTimeout(() => {
+            addLine("> VERIFYING CREDENTIALS...", "dim");
             setTimeout(() => {
-              onClose();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }, 3000);
-          }, 800);
-        }, 700);
-      }, 600);
+              // Success!
+              setStep("success");
+              addLine("> ACCESS GRANTED. WELCOME TO TECH ERA.", "cyan");
+              addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
+              if (email) {
+                addLine(`> EMAIL: ${email}`, "dim");
+              }
+              if (phone) {
+                addLine(`> PHONE: ${phone}`, "dim");
+              }
+              if (selectedEvent) {
+                addLine(`> EVENT: ${selectedEvent.name.toUpperCase()}`, "dim");
+              }
+              if (teamName) {
+                addLine(`> TEAM_NAME: ${teamName.toUpperCase()}`, "dim");
+                addLine(`> LEADER_UID: ${leaderUid.toUpperCase()}`, "dim");
+              }
+              if (teamMembers.length > 0) {
+                addLine(`> TEAM_MEMBERS: ${teamMembers.map(m => m.name).join(", ").toUpperCase()}`, "dim");
+              } else if (teamName) {
+                addLine(`> TEAM_MEMBERS: NONE (SOLO_MODE)`, "dim");
+              }
+
+              localStorage.setItem("techEraRegistration", JSON.stringify(registrationData));
+
+              const memberCount = teamMembers.length;
+              toast({
+                title: "Team Registered Successfully",
+                description: `Team "${teamName}" (Leader: ${leaderUid}) registered with ${memberCount} member${memberCount !== 1 ? 's' : ''}.`,
+                variant: "default",
+              });
+
+              setTimeout(() => {
+                onClose();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }, 3000);
+            }, 800);
+          }, 700);
+        }, 600);
+      };
+
+      submitData();
     }
   };
 

@@ -113,7 +113,7 @@ interface MissionBriefingProps {
 const MissionBriefing = ({ visible }: MissionBriefingProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const headline = "> ACCESS GRANTED. WELCOME TO NEXUS.";
+  const headline = "> ACCESS GRANTED. WELCOME TO TECH ERA.";
   const typedHeadline = useTypewriter(headline, 40, visible && isInView);
   const showCursor = typedHeadline.length < headline.length;
 
@@ -126,6 +126,24 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
   return (
     <section ref={ref} className="relative py-16 sm:py-24 px-4 sm:px-6">
       <div className="max-w-lg mx-auto">
+        {/* ── Society Branding Header ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.1 }}
+          className="flex flex-col items-center mb-10"
+        >
+          <div className="px-3 py-1 rounded-full border border-primary/30 bg-primary/5 mb-3">
+            <span className="font-mono text-[10px] text-primary tracking-[0.3em] uppercase">
+              Hosted by Apex Techno Warriors
+            </span>
+          </div>
+          <h2 className="font-mono text-3xl font-black text-foreground tracking-tighter">
+            TECH <span className="text-primary text-glow-cyan">ERA</span> 2026
+          </h2>
+          <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mt-2" />
+        </motion.div>
+
         {/* ── Status Widgets ─────────────────── */}
         <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
           <StatusWidget label="UPLINK" value="ACTIVE" color="green" delay={0.2} />
@@ -172,7 +190,7 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
         </motion.div>
 
         {/* ── Quick Actions Grid ──────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 mb-6">
           <QuickAction
             icon="⬡"
             label="PROTOCOL"
@@ -187,14 +205,29 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
             delay={1.5}
             onClick={() => scrollTo("team")}
           />
-          <QuickAction
-            icon="▶"
-            label="INITIATE"
-            sublabel="Get Tickets"
-            highlighted
-            delay={1.8}
-          />
         </div>
+
+        {/* ── Primary Call to Action ── */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1.7, type: "spring", stiffness: 100 }}
+          whileHover={{ scale: 1.02, boxShadow: "0 0 40px hsl(var(--neon-magenta) / 0.3)" }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => scrollTo("team")}
+          className="w-full py-5 rounded-2xl border-2 border-secondary/50 bg-secondary/10 flex flex-col items-center justify-center gap-1 group transition-all duration-500 overflow-hidden relative"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+          <span className="font-mono text-lg font-black text-secondary text-glow-magenta tracking-[0.2em]">
+            REGISTER NOW
+          </span>
+          <span className="font-mono text-[10px] text-muted-foreground/80 tracking-widest uppercase">
+            Initialize your participation node
+          </span>
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-secondary opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300">
+            ▶▶
+          </div>
+        </motion.button>
       </div>
     </section>
   );
