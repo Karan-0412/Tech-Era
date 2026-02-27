@@ -62,7 +62,7 @@ const MatrixRain = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const chars = "NEXUS01アイウエオカキクケコサシスセソ>_[]{}|/\\";
+    const chars = "APEXTECH01アイウエオカキクケコサシスセソ>_[]{}|/\\";
     const fontSize = 14;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array.from({ length: columns }, () => Math.random() * -100);
@@ -157,6 +157,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
   const [currentMemberData, setCurrentMemberData] = useState({ uid: "", name: "", email: "", phone: "" });
   const [memberFieldStep, setMemberFieldStep] = useState<"uid" | "name" | "email" | "phone">("uid");
   const [shakeInput, setShakeInput] = useState(false);
+  const [isSubmittingToSheets, setIsSubmittingToSheets] = useState(false);
   const [currentAutoType, setCurrentAutoType] = useState<{
     text: string;
     color: TerminalLine["color"];
@@ -437,63 +438,86 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
       setStep("submitting");
 
       addLine("> ENCRYPTING PAYLOAD...", "dim");
-      setTimeout(() => {
-        addLine("> TRANSMITTING TO MAINFRAME...", "dim");
-        setTimeout(() => {
-          addLine("> VERIFYING CREDENTIALS...", "dim");
-          setTimeout(() => {
-            // Success!
-            setStep("success");
-            addLine("> ACCESS GRANTED. WELCOME TO NEXUS.", "cyan");
-            addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
-            if (email) {
-              addLine(`> EMAIL: ${email}`, "dim");
-            }
-            if (phone) {
-              addLine(`> PHONE: ${phone}`, "dim");
-            }
-            if (selectedEvent) {
-              addLine(`> EVENT: ${selectedEvent.name.toUpperCase()}`, "dim");
-            }
-            if (teamName) {
-              addLine(`> TEAM_NAME: ${teamName.toUpperCase()}`, "dim");
-              addLine(`> LEADER_UID: ${leaderUid.toUpperCase()}`, "dim");
-            }
-            if (teamMembers.length > 0) {
-              addLine(`> TEAM_MEMBERS: ${teamMembers.map(m => m.name).join(", ").toUpperCase()}`, "dim");
-            } else if (teamName) {
-              addLine(`> TEAM_MEMBERS: NONE (SOLO_MODE)`, "dim");
-            }
 
-            // Store registration data
-            const registrationData = {
-              userName: name,
-              userEmail: email,
-              userPhone: phone,
-              selectedEvent: selectedEvent,
-              teamName: teamName,
-              leaderUid: leaderUid,
-              teamMembers: teamMembers,
-              registeredAt: new Date().toISOString()
-            };
-            localStorage.setItem("nexusRegistration", JSON.stringify(registrationData));
+      const submitData = async () => {
+        const registrationData = {
+          userName: name,
+          userEmail: email,
+          userPhone: phone,
+          selectedEvent: selectedEvent,
+          teamName: teamName,
+          leaderUid: leaderUid,
+          teamMembers: teamMembers,
+          registeredAt: new Date().toISOString()
+        };
 
-            // Show success toast
-            const memberCount = teamMembers.length;
-            toast({
-              title: "Team Registered Successfully",
-              description: `Team "${teamName}" (Leader: ${leaderUid}) registered with ${memberCount} member${memberCount !== 1 ? 's' : ''}.`,
-              variant: "default",
+        // Try to submit to Google Sheets if URL is provided
+        const appsScriptUrl = import.meta.env.VITE_GOOGLE_SHEET_APPS_SCRIPT_URL;
+        if (appsScriptUrl) {
+          setIsSubmittingToSheets(true);
+          try {
+            await fetch(appsScriptUrl, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(registrationData)
             });
+            addLine("> DATA_SYNCHRONIZED_WITH_SHEET.", "cyan");
+          } catch (e) {
+            console.error("Failed to sync with sheets", e);
+            addLine("> WARNING: SHEET_SYNC_FAILED. LOCAL_SAVE_ONLY.", "red");
+          } finally {
+            setIsSubmittingToSheets(false);
+          }
+        }
 
-            // Scroll to hero section after 3 seconds
+        setTimeout(() => {
+          addLine("> TRANSMITTING TO MAINFRAME...", "dim");
+          setTimeout(() => {
+            addLine("> VERIFYING CREDENTIALS...", "dim");
             setTimeout(() => {
-              onClose();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }, 3000);
-          }, 800);
-        }, 700);
-      }, 600);
+              // Success!
+              setStep("success");
+            addLine("> ACCESS GRANTED. WELCOME TO TECH ERA 3.0.", "cyan");
+            addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
+              if (email) {
+                addLine(`> EMAIL: ${email}`, "dim");
+              }
+              if (phone) {
+                addLine(`> PHONE: ${phone}`, "dim");
+              }
+              if (selectedEvent) {
+                addLine(`> EVENT: ${selectedEvent.name.toUpperCase()}`, "dim");
+              }
+              if (teamName) {
+                addLine(`> TEAM_NAME: ${teamName.toUpperCase()}`, "dim");
+                addLine(`> LEADER_UID: ${leaderUid.toUpperCase()}`, "dim");
+              }
+              if (teamMembers.length > 0) {
+                addLine(`> TEAM_MEMBERS: ${teamMembers.map(m => m.name).join(", ").toUpperCase()}`, "dim");
+              } else if (teamName) {
+                addLine(`> TEAM_MEMBERS: NONE (SOLO_MODE)`, "dim");
+              }
+
+              localStorage.setItem("techEraRegistration", JSON.stringify(registrationData));
+
+              const memberCount = teamMembers.length;
+              toast({
+                title: "Team Registered Successfully",
+                description: `Team "${teamName}" (Leader: ${leaderUid}) registered with ${memberCount} member${memberCount !== 1 ? 's' : ''}.`,
+                variant: "default",
+              });
+
+              setTimeout(() => {
+                onClose();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }, 3000);
+            }, 800);
+          }, 700);
+        }, 600);
+      };
+
+      submitData();
     }
   };
 
@@ -516,8 +540,8 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
           <div className="relative z-20 flex items-center justify-between px-4 py-3 border-b border-border">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-              <span className="font-mono text-[10px] text-accent tracking-[0.3em]">
-                NEXUS MAINFRAME v2.6.0
+              <span className="font-mono text-[11px] text-accent tracking-[0.3em]">
+                APEX MAINFRAME v3.0.0
               </span>
             </div>
             <button
@@ -678,10 +702,10 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
 
           {/* Bottom status bar */}
           <div className="relative z-20 px-4 py-2 border-t border-border flex items-center justify-between">
-            <span className="font-mono text-[9px] text-muted-foreground/50">
+            <span className="font-mono text-[11px] text-muted-foreground/50">
               SECURE CHANNEL • AES-256 ENCRYPTED
             </span>
-            <span className="font-mono text-[9px] text-accent/40">
+            <span className="font-mono text-[11px] text-accent/40">
               {step === "success" ? "● CONNECTED" : "○ PENDING"}
             </span>
           </div>

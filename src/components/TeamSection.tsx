@@ -87,22 +87,22 @@ const TeamSection = () => {
               </div>
               <div>
                 <h3 className="font-mono text-sm font-bold text-foreground">{registrationData.userName}</h3>
-                <p className="font-mono text-[10px] text-accent/70 tracking-widest">LEADER • {registrationData.leaderUid}</p>
+                <p className="font-mono text-[12px] text-accent/70 tracking-widest">LEADER • {registrationData.leaderUid}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-2 mt-2 pt-3 border-t border-accent/10">
               <div>
-                <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Email</p>
-                <p className="font-mono text-[10px] text-foreground truncate">{registrationData.userEmail}</p>
+                <p className="font-mono text-[10px] text-muted-foreground tracking-tighter uppercase">Email</p>
+                <p className="font-mono text-[11px] text-foreground truncate">{registrationData.userEmail}</p>
               </div>
               <div>
-                <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Phone</p>
-                <p className="font-mono text-[10px] text-foreground">{registrationData.userPhone}</p>
+                <p className="font-mono text-[10px] text-muted-foreground tracking-tighter uppercase">Phone</p>
+                <p className="font-mono text-[11px] text-foreground">{registrationData.userPhone}</p>
               </div>
               <div>
-                <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">UID</p>
-                <p className="font-mono text-[10px] text-foreground">{registrationData.leaderUid}</p>
+                <p className="font-mono text-[10px] text-muted-foreground tracking-tighter uppercase">UID</p>
+                <p className="font-mono text-[11px] text-foreground">{registrationData.leaderUid}</p>
               </div>
             </div>
           </div>
@@ -110,7 +110,7 @@ const TeamSection = () => {
 
         {registrationData.teamMembers.length > 0 && (
           <div className="text-center py-4">
-            <p className="font-mono text-[10px] text-muted-foreground/60">// TEAM MEMBERS ({registrationData.teamMembers.length})</p>
+            <p className="font-mono text-[11px] text-muted-foreground/60">// TEAM MEMBERS ({registrationData.teamMembers.length})</p>
           </div>
         )}
 
@@ -131,18 +131,18 @@ const TeamSection = () => {
                   </div>
                   <div>
                     <h3 className="font-mono text-sm font-bold text-foreground">{member.name}</h3>
-                    <p className="font-mono text-[10px] text-primary/70 tracking-widest">{member.uid}</p>
+                    <p className="font-mono text-[11px] text-primary/70 tracking-widest">{member.uid}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-primary/10">
                   <div>
-                    <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Email</p>
-                    <p className="font-mono text-[10px] text-foreground truncate">{member.email}</p>
+                    <p className="font-mono text-[10px] text-muted-foreground tracking-tighter uppercase">Email</p>
+                    <p className="font-mono text-[11px] text-foreground truncate">{member.email}</p>
                   </div>
                   <div>
-                    <p className="font-mono text-[8px] text-muted-foreground tracking-tighter uppercase">Phone</p>
-                    <p className="font-mono text-[10px] text-foreground">{member.phone}</p>
+                    <p className="font-mono text-[10px] text-muted-foreground tracking-tighter uppercase">Phone</p>
+                    <p className="font-mono text-[11px] text-foreground">{member.phone}</p>
                   </div>
                 </div>
               </div>

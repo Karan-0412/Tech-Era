@@ -29,15 +29,15 @@ const TerminalFooter = () => {
             <div className="w-2.5 h-2.5 rounded-full bg-destructive/60" />
             <div className="w-2.5 h-2.5 rounded-full bg-neon-green/40" />
             <div className="w-2.5 h-2.5 rounded-full bg-primary/40" />
-            <span className="ml-2 font-mono text-[10px] text-muted-foreground">
-              nexus@mainframe ~ register
+            <span className="ml-2 font-mono text-[11px] text-muted-foreground">
+              apex@mainframe ~ register
             </span>
           </div>
 
           {/* Terminal body */}
           <div className="p-4 font-mono text-xs min-h-[120px] flex flex-col items-center justify-center gap-4">
             <div className="text-muted-foreground text-center">
-              <p>nexus@mainframe:~$ _awaiting_input</p>
+              <p>apex@mainframe:~$ _awaiting_input</p>
             </div>
             <button
               onClick={() => setOverlayOpen(true)}
@@ -59,14 +59,14 @@ const TerminalFooter = () => {
                   e.preventDefault();
                   document.getElementById("team")?.scrollIntoView({ behavior: "smooth" });
                 } : undefined}
-                className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors tracking-widest"
+                className="font-mono text-[11px] text-muted-foreground hover:text-primary transition-colors tracking-widest"
               >
                 {link}
               </a>
             ))}
           </div>
-          <p className="font-mono text-[9px] text-muted-foreground/50">
-            © 2026 NEXUS PROTOCOL • ALL RIGHTS RESERVED
+          <p className="font-mono text-[11px] text-muted-foreground/50">
+            © TECH ERA 3.0 • APEX TECHNO WARRIORS • ALL RIGHTS RESERVED
           </p>
         </div>
       </motion.div>

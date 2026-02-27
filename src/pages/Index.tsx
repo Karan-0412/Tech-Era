@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import BootSequence from "@/components/BootSequence";
 import MeshBackground from "@/components/MeshBackground";
 import HeroScreen from "@/components/HeroScreen";
@@ -18,33 +18,38 @@ const Index = () => {
   const handleUnlock = useCallback(() => setUnlocked(true), []);
 
   return (
-    <div className="relative min-h-screen bg-background">
-      <AnimatePresence>
-        {!booted && <BootSequence onComplete={handleBootComplete} />}
+    <div className="relative min-h-screen bg-background text-foreground">
+      <AnimatePresence mode="wait">
+        {!booted ? (
+          <BootSequence key="boot" onComplete={handleBootComplete} />
+        ) : (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="w-full"
+          >
+            <MeshBackground />
+            <main className="relative z-10">
+              {!unlocked && <HeroScreen onUnlock={handleUnlock} />}
+              {unlocked && (
+                <>
+                  <MissionBriefing visible={unlocked} />
+                  <AboutSection />
+                  <div id="speakers">
+                    <SpeakerCarousel />
+                  </div>
+                  <TeamSection />
+                  <div id="schedule">
+                    <ScheduleTimeline />
+                  </div>
+                  <TerminalFooter />
+                </>
+              )}
+            </main>
+          </motion.div>
+        )}
       </AnimatePresence>
-
-      {booted && (
-        <>
-          <MeshBackground />
-          <main className="relative z-10">
-            {!unlocked && <HeroScreen onUnlock={handleUnlock} />}
-            {unlocked && (
-              <>
-                <MissionBriefing visible={unlocked} />
-                <AboutSection />
-                <div id="speakers">
-                  <SpeakerCarousel />
-                </div>
-                <TeamSection />
-                <div id="schedule">
-                  <ScheduleTimeline />
-                </div>
-                <TerminalFooter />
-              </>
-            )}
-          </main>
-        </>
-      )}
     </div>
   );
 };

@@ -63,10 +63,10 @@ const SpecCard = ({ spec, index }: { spec: typeof specs[0]; index: number }) => 
       <div className="font-mono text-2xl font-bold text-foreground mb-0.5">
         {spec.title}
       </div>
-      <div className={`font-mono text-xs tracking-widest ${textColorMap[spec.color]} mb-3`}>
+      <div className={`font-mono text-sm tracking-widest ${textColorMap[spec.color]} mb-3`}>
         {spec.subtitle}
       </div>
-      <p className="text-sm text-muted-foreground leading-relaxed">
+      <p className="text-base text-muted-foreground leading-relaxed">
         {spec.description}
       </p>
     </motion.div>
@@ -85,7 +85,7 @@ const AboutSection = () => {
         animate={titleInView ? { opacity: 1, y: 0 } : {}}
         className="text-center mb-16"
       >
-        <p className="font-mono text-xs text-primary tracking-[0.4em] mb-3">
+        <p className="font-mono text-sm text-primary tracking-[0.4em] mb-3">
           // SYSTEM_SPECS
         </p>
         <h2 className="font-mono text-3xl sm:text-4xl font-bold text-foreground">
