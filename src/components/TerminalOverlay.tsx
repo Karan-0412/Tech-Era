@@ -478,8 +478,8 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
             setTimeout(() => {
               // Success!
               setStep("success");
-              addLine("> ACCESS GRANTED. WELCOME TO TECH ERA.", "cyan");
-              addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
+            addLine("> ACCESS GRANTED. WELCOME TO TECH ERA 3.0.", "cyan");
+            addLine(`> NODE "${name}" REGISTERED SUCCESSFULLY.`, "cyan");
               if (email) {
                 addLine(`> EMAIL: ${email}`, "dim");
               }

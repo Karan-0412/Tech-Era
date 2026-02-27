@@ -66,7 +66,7 @@ const TerminalFooter = () => {
             ))}
           </div>
           <p className="font-mono text-[11px] text-muted-foreground/50">
-            © 2026 APEX TECHNO WARRIORS • ALL RIGHTS RESERVED
+            © TECH ERA 3.0 • APEX TECHNO WARRIORS • ALL RIGHTS RESERVED
           </p>
         </div>
       </motion.div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const bootLines = [
-  "TECH_ERA_OS v3.0 INITIALIZING...",
+  "TECH_ERA_3.0 INITIALIZING...",
   "Syncing with Apex Mainframe...",
   "Loading neural interface...",
   "Scanning biometrics... [OK]",
@@ -45,7 +45,7 @@ const BootSequence = ({ onComplete }: { onComplete: () => void }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            TECH://ERA
+            TECH://ERA 3.0
           </motion.h1>
 
           {/* Boot lines */}

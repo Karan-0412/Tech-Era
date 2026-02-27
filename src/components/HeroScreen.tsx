@@ -68,8 +68,8 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            TECH
-            <span className="text-primary text-glow-cyan"> ERA</span>
+            TECH ERA
+            <span className="text-primary text-glow-cyan"> 3.0</span>
           </motion.h1>
 
           <motion.p

@@ -113,7 +113,7 @@ interface MissionBriefingProps {
 const MissionBriefing = ({ visible }: MissionBriefingProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const headline = "> ACCESS GRANTED. WELCOME TO TECH ERA.";
+  const headline = "> ACCESS GRANTED. WELCOME TO TECH ERA 3.0.";
   const typedHeadline = useTypewriter(headline, 40, visible && isInView);
   const showCursor = typedHeadline.length < headline.length;
 
@@ -139,7 +139,7 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
             </span>
           </div>
           <h2 className="font-mono text-3xl font-black text-foreground tracking-tighter">
-            TECH <span className="text-primary text-glow-cyan">ERA</span> 2026
+            TECH <span className="text-primary text-glow-cyan">ERA</span> 3.0
           </h2>
           <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mt-2" />
         </motion.div>
