@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HeroScreenProps {
   onUnlock: () => void;
 }
 
 const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
+  const isMobile = useIsMobile();
   const [time, setTime] = useState(new Date());
   const [unlocking, setUnlocking] = useState(false);
 
@@ -27,7 +29,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
   return (
     <AnimatePresence>
       {!unlocking ? (
-        <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+        <section className="relative h-[100dvh] flex flex-col items-center justify-center px-6 overflow-hidden">
           {/* Subtle grid overlay */}
           <div
             className="absolute inset-0 opacity-[0.03]"
@@ -101,18 +103,20 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
         </section>
       ) : (
         /* ── Blast Door Transition ────────────────────── */
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden">
           {/* Flash */}
-          <motion.div
-            className="absolute inset-0 z-30 bg-primary"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.9, 0] }}
-            transition={{ duration: 0.4, times: [0, 0.15, 1] }}
-          />
+          {!isMobile && (
+            <motion.div
+              className="absolute inset-0 z-30 bg-primary"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.9, 0] }}
+              transition={{ duration: 0.4, times: [0, 0.15, 1] }}
+            />
+          )}
 
           {/* Left door */}
           <motion.div
-            className="absolute inset-y-0 left-0 w-1/2 bg-background z-20 border-r border-primary/30"
+            className="absolute inset-y-0 left-0 w-1/2 bg-background z-20 border-r border-primary/30 will-change-transform"
             initial={{ x: 0 }}
             animate={{ x: "-105%" }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
@@ -125,7 +129,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
 
           {/* Right door */}
           <motion.div
-            className="absolute inset-y-0 right-0 w-1/2 bg-background z-20 border-l border-primary/30"
+            className="absolute inset-y-0 right-0 w-1/2 bg-background z-20 border-l border-primary/30 will-change-transform"
             initial={{ x: 0 }}
             animate={{ x: "105%" }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
@@ -147,10 +151,11 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
           </motion.div>
 
           {/* Particle burst (simple CSS dots) */}
-          {Array.from({ length: 20 }).map((_, i) => {
-            const angle = (i / 20) * 360;
+          {Array.from({ length: isMobile ? 8 : 20 }).map((_, i) => {
+            const particleCount = isMobile ? 8 : 20;
+            const angle = (i / particleCount) * 360;
             const rad = (angle * Math.PI) / 180;
-            const distance = 300 + Math.random() * 400;
+            const distance = isMobile ? 200 + Math.random() * 200 : 300 + Math.random() * 400;
             return (
               <motion.div
                 key={i}
