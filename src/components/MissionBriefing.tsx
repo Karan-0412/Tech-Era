@@ -14,46 +14,49 @@ const MissionBriefing = ({ visible, onRegister }: MissionBriefingProps) => {
   if (!visible) return null;
 
   return (
-    <section ref={ref} className="relative py-24 sm:py-32 px-4 sm:px-6">
-      <div className="max-w-lg mx-auto">
+    <section ref={ref} className="relative py-20 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto flex flex-col items-center">
         {/* ── Society Branding Header ── */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.1 }}
-          className="flex flex-col items-center mb-16"
+          className="flex flex-col items-center mb-8"
         >
-          <div className="px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 mb-6">
-            <span className="font-mono text-[11px] text-primary tracking-[0.4em] uppercase font-bold">
+          <div className="px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-6">
+            <span className="font-mono text-[10px] text-primary tracking-[0.4em] uppercase font-semibold">
               Hosted by Apex Techno Warriors
             </span>
           </div>
-          <h2 className="font-mono text-4xl sm:text-6xl font-black text-foreground tracking-tighter text-center">
+          <h2 className="font-mono text-5xl sm:text-7xl font-black text-foreground tracking-tighter text-center">
             TECH <span className="text-primary text-glow-cyan">ERA</span> 3.0
           </h2>
-          <div className="w-32 h-1 bg-gradient-to-r from-transparent via-primary to-transparent mt-6" />
+          <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent mt-4" />
         </motion.div>
 
-        {/* ── Primary Call to Action ── */}
+        {/* ── Call to Action ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-          className="flex justify-center"
+          transition={{ delay: 0.3 }}
+          className="w-full flex justify-center"
         >
           <motion.button
-            whileHover={{ scale: 1.05, boxShadow: "0 0 50px hsl(var(--neon-magenta) / 0.4)" }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02, backgroundColor: "hsla(var(--secondary) / 0.15)" }}
+            whileTap={{ scale: 0.98 }}
             onClick={onRegister}
-            className="w-full sm:w-auto px-16 py-8 rounded-2xl border-2 border-secondary/50 bg-secondary/10 flex flex-col items-center justify-center gap-1 group transition-all duration-500 overflow-hidden relative"
+            className="group relative px-10 py-4 rounded-xl border border-secondary/40 bg-secondary/5 transition-all duration-300 overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-            <span className="font-mono text-2xl font-black text-secondary text-glow-magenta tracking-[0.3em]">
+            {/* Gloss effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            
+            <span className="font-mono text-sm sm:text-base font-bold text-secondary text-glow-magenta tracking-[0.3em] uppercase">
               REGISTER NOW
             </span>
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 text-secondary opacity-50 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300">
+            
+            <span className="ml-3 text-secondary text-glow-magenta opacity-60 group-hover:opacity-100 transition-opacity">
               ▶▶
-            </div>
+            </span>
           </motion.button>
         </motion.div>
       </div>

@@ -86,7 +86,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
           {/* CTA Button */}
           <motion.button
             onClick={handleUnlock}
-            className="relative group px-8 py-4 font-mono text-sm font-semibold tracking-wider uppercase
+            className="relative group px-10 py-4 font-mono text-sm font-semibold tracking-[0.3em] uppercase
               border border-primary/50 rounded-lg bg-primary/5 text-primary
               animate-pulse-glow transition-all duration-300
               hover:bg-primary/10 hover:border-primary active:scale-95"
@@ -96,7 +96,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="relative z-10">TAP TO INITIALIZE ▸</span>
+            <span className="relative z-10">INITIALIZE ▸</span>
             <div className="absolute inset-0 rounded-lg bg-primary/5 blur-xl group-hover:bg-primary/10 transition-all" />
           </motion.button>
 
