@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface TeamMember {
@@ -19,12 +19,12 @@ interface RegistrationData {
   registeredAt: string;
 }
 
-const TeamSection = () => {
+const TeamSection = ({ onRegister }: { onRegister: () => void }) => {
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
 
-  useEffect(() => {
+  const loadData = useCallback(() => {
     // Load registration data from localStorage
-    const stored = localStorage.getItem("nexusRegistration");
+    const stored = localStorage.getItem("techEraRegistration");
     if (stored) {
       try {
         setRegistrationData(JSON.parse(stored));
@@ -33,6 +33,14 @@ const TeamSection = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    loadData();
+
+    // Listen for registration updates
+    window.addEventListener("registrationUpdate", loadData);
+    return () => window.removeEventListener("registrationUpdate", loadData);
+  }, [loadData]);
 
   if (!registrationData || !registrationData.teamMembers || registrationData.teamMembers.length === 0) {
     return (
@@ -46,9 +54,15 @@ const TeamSection = () => {
           <p className="font-mono text-xs text-primary tracking-[0.4em] mb-3">
             // NO_TEAM_DATA
           </p>
-          <p className="font-mono text-sm text-muted-foreground">
+          <p className="font-mono text-sm text-muted-foreground mb-8">
             Initialize connection to register your team
           </p>
+          <button
+            onClick={onRegister}
+            className="px-6 py-2.5 rounded border border-primary/30 text-primary text-xs hover:bg-primary/10 transition-colors tracking-[0.3em] animate-pulse-glow font-mono"
+          >
+            REGISTER_TEAM
+          </button>
         </motion.div>
       </section>
     );

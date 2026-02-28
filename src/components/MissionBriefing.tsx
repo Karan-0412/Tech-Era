@@ -108,9 +108,10 @@ const QuickAction = ({
 /* ── Main Component ─────────────────────────────────── */
 interface MissionBriefingProps {
   visible: boolean;
+  onRegister: () => void;
 }
 
-const MissionBriefing = ({ visible }: MissionBriefingProps) => {
+const MissionBriefing = ({ visible, onRegister }: MissionBriefingProps) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const headline = "> ACCESS GRANTED. WELCOME TO TECH ERA 3.0.";
@@ -214,7 +215,7 @@ const MissionBriefing = ({ visible }: MissionBriefingProps) => {
           transition={{ delay: 1.7, type: "spring", stiffness: 100 }}
           whileHover={{ scale: 1.02, boxShadow: "0 0 40px hsl(var(--neon-magenta) / 0.3)" }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => scrollTo("team")}
+          onClick={onRegister}
           className="w-full py-5 rounded-2xl border-2 border-secondary/50 bg-secondary/10 flex flex-col items-center justify-center gap-1 group transition-all duration-500 overflow-hidden relative"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-secondary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />

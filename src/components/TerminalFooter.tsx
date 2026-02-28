@@ -1,9 +1,7 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import TerminalOverlay from "./TerminalOverlay";
 
-const TerminalFooter = () => {
-  const [overlayOpen, setOverlayOpen] = useState(false);
+const TerminalFooter = ({ onOpenTerminal }: { onOpenTerminal: () => void }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -40,7 +38,7 @@ const TerminalFooter = () => {
               <p>apex@mainframe:~$ _awaiting_input</p>
             </div>
             <button
-              onClick={() => setOverlayOpen(true)}
+              onClick={onOpenTerminal}
               className="px-6 py-2.5 rounded border border-primary/30 text-primary text-xs hover:bg-primary/10 transition-colors tracking-[0.3em] animate-pulse-glow font-mono"
             >
               INITIALIZE CONNECTION
@@ -70,9 +68,6 @@ const TerminalFooter = () => {
           </p>
         </div>
       </motion.div>
-
-      {/* Full-screen terminal overlay */}
-      <TerminalOverlay open={overlayOpen} onClose={() => setOverlayOpen(false)} />
     </footer>
   );
 };
