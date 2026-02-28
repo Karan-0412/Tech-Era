@@ -16,90 +16,185 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  const hours = time.getHours().toString().padStart(2, "0");
-  const minutes = time.getMinutes().toString().padStart(2, "0");
-  const seconds = time.getSeconds().toString().padStart(2, "0");
-
   const handleUnlock = () => {
     setUnlocking(true);
-    // Delay to let the animation play
     setTimeout(() => onUnlock(), 1200);
   };
 
   return (
     <AnimatePresence>
       {!unlocking ? (
-        <section className="relative h-[100dvh] flex flex-col items-center justify-center px-6 overflow-hidden">
-          {/* Subtle grid overlay */}
+        <section className="relative w-full h-[100dvh] flex flex-col items-center justify-center px-4 sm:px-6 overflow-hidden bg-black">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            {/* Gradient orbs */}
+            <motion.div
+              className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-cyan-400/20 blur-3xl"
+              style={{
+                background: "radial-gradient(circle, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.15))",
+              }}
+              animate={{
+                y: [0, 100, 0],
+                x: [0, 50, 0],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-cyan-500/15 blur-3xl"
+              style={{
+                background: "radial-gradient(circle, rgba(59, 130, 246, 0.15), rgba(34, 211, 238, 0.1))",
+              }}
+              animate={{
+                y: [0, -100, 0],
+                x: [0, -50, 0],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="absolute top-1/2 right-0 w-80 h-80 rounded-full bg-cyan-400/10 blur-3xl"
+              style={{
+                background: "radial-gradient(circle, rgba(34, 211, 238, 0.1), rgba(59, 130, 246, 0.05))",
+              }}
+              animate={{
+                y: [0, 50, 0],
+                x: [0, -80, 0],
+              }}
+              transition={{
+                duration: 12,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
+
+          {/* Grid overlay */}
           <div
-            className="absolute inset-0 opacity-[0.03]"
+            className="absolute inset-0 z-0 opacity-5"
             style={{
-              backgroundImage: `linear-gradient(hsl(var(--neon-cyan) / 0.3) 1px, transparent 1px),
-                linear-gradient(90deg, hsl(var(--neon-cyan) / 0.3) 1px, transparent 1px)`,
-              backgroundSize: "60px 60px",
+              backgroundImage: `linear-gradient(hsl(var(--neon-cyan) / 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, hsl(var(--neon-cyan) / 0.5) 1px, transparent 1px)`,
+              backgroundSize: "50px 50px",
             }}
           />
 
-          {/* Date */}
-          <motion.p
-            className="font-mono text-xs text-muted-foreground tracking-[0.3em] uppercase mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            March 15–17, 2026
-          </motion.p>
+          {/* Floating particles */}
+          {!isMobile &&
+            Array.from({ length: 15 }).map((_, i) => {
+              const isBlue = i % 2 === 0;
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute z-0 w-1 h-1 rounded-full"
+                  style={{
+                    background: isBlue ? "rgba(59, 130, 246, 0.4)" : "rgba(34, 211, 238, 0.4)",
+                  }}
+                  initial={{
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                  }}
+                  animate={{
+                    y: [0, -200, 0],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 5 + Math.random() * 5,
+                    repeat: Infinity,
+                    delay: Math.random() * 2,
+                  }}
+                />
+              );
+            })}
 
-          {/* Digital Clock */}
-          <motion.div
-            className="font-mono text-6xl sm:text-8xl font-bold text-primary text-glow-cyan mb-6 tabular-nums"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 100, delay: 0.4 }}
-          >
-            {hours}
-            <span className="animate-typing-cursor">:</span>
-            {minutes}
-            <span className="text-muted-foreground text-4xl sm:text-5xl ml-1">.{seconds}</span>
-          </motion.div>
+          {/* Content wrapper */}
+          <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-8">
+            {/* Society Name */}
+            <motion.div
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="flex items-center justify-center space-x-2"
+            >
+              <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-400 via-blue-400 to-transparent" />
+              <p className="font-mono text-xs sm:text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 text-transparent bg-clip-text tracking-[0.3em] uppercase font-semibold">
+                APEX TECHNO WARRIORS
+              </p>
+              <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-400 via-blue-400 to-transparent" />
+            </motion.div>
 
-          {/* Logo */}
-          <motion.h1
-            className="font-mono text-4xl sm:text-6xl font-bold text-foreground tracking-tight mb-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            TECH ERA
-            <span className="text-primary text-glow-cyan"> 3.0</span>
-          </motion.h1>
+            {/* Main Title */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{
+                delay: 0.4,
+                duration: 0.8,
+                type: "spring",
+                stiffness: 80,
+              }}
+              className="space-y-2"
+            >
+              <h1 className="font-black text-5xl sm:text-7xl lg:text-8xl tracking-tighter">
+                <span className="text-white">TECH</span>
+                <br className="hidden sm:block" />
+                <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 text-transparent bg-clip-text animate-pulse">
+                  ERA 3.0
+                </span>
+              </h1>
+            </motion.div>
 
-          <motion.p
-            className="font-mono text-sm text-muted-foreground mb-12 tracking-widest"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            [ INITIALIZE THE FUTURE ]
-          </motion.p>
+            {/* Subtitle with date */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="font-mono text-xs sm:text-sm text-gray-300/80 tracking-wider uppercase"
+            >
+              March 15–17, 2026 • The Future Awaits
+            </motion.p>
 
-          {/* CTA Button */}
-          <motion.button
-            onClick={handleUnlock}
-            className="relative group px-10 py-4 font-mono text-sm font-semibold tracking-[0.3em] uppercase
-              border border-primary/50 rounded-lg bg-primary/5 text-primary
-              animate-pulse-glow transition-all duration-300
-              hover:bg-primary/10 hover:border-primary active:scale-95"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="relative z-10">INITIALIZE ▸</span>
-            <div className="absolute inset-0 rounded-lg bg-primary/5 blur-xl group-hover:bg-primary/10 transition-all" />
-          </motion.button>
+            {/* Register Button */}
+            <motion.button
+              onClick={handleUnlock}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              whileHover={{ scale: 1.08, boxShadow: "0 0 30px rgba(34, 211, 238, 0.8)" }}
+              whileTap={{ scale: 0.95 }}
+              className="relative group mt-8 px-8 sm:px-12 py-4 sm:py-5 font-mono text-sm sm:text-base font-bold tracking-[0.2em] uppercase
+                border-2 border-transparent rounded-md
+                bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-500/10
+                transition-all duration-300
+                overflow-hidden"
+              style={{
+                backgroundImage: "linear-gradient(to right, rgba(34, 211, 238, 0.1), rgba(59, 130, 246, 0.1), rgba(34, 211, 238, 0.1))",
+                borderImage: "linear-gradient(to right, #06b6d4, #3b82f6, #06b6d4) 1",
+              }}
+            >
+              {/* Animated border glow */}
+              <div className="absolute inset-0 z-0 rounded-md bg-gradient-to-r from-cyan-400/0 via-blue-400/30 to-cyan-400/0 opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
 
+              <span className="relative z-10 flex items-center justify-center space-x-3 bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 text-transparent bg-clip-text">
+                <span>REGISTER NOW</span>
+                <span className="text-lg text-cyan-400">→</span>
+              </span>
+            </motion.button>
+
+            {/* Decorative line */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+              className="w-32 h-px bg-gradient-to-r from-transparent via-cyan-400 via-blue-400 to-transparent mt-4"
+            />
+          </div>
         </section>
       ) : (
         /* ── Blast Door Transition ────────────────────── */
