@@ -30,6 +30,9 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             {/* Gradient orbs */}
             <motion.div
               className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-cyan-400/20 blur-3xl"
+              style={{
+                background: "radial-gradient(circle, rgba(34, 211, 238, 0.2), rgba(59, 130, 246, 0.15))",
+              }}
               animate={{
                 y: [0, 100, 0],
                 x: [0, 50, 0],
@@ -42,6 +45,9 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             />
             <motion.div
               className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-cyan-500/15 blur-3xl"
+              style={{
+                background: "radial-gradient(circle, rgba(59, 130, 246, 0.15), rgba(34, 211, 238, 0.1))",
+              }}
               animate={{
                 y: [0, -100, 0],
                 x: [0, -50, 0],
@@ -54,6 +60,9 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
             />
             <motion.div
               className="absolute top-1/2 right-0 w-80 h-80 rounded-full bg-cyan-400/10 blur-3xl"
+              style={{
+                background: "radial-gradient(circle, rgba(34, 211, 238, 0.1), rgba(59, 130, 246, 0.05))",
+              }}
               animate={{
                 y: [0, 50, 0],
                 x: [0, -80, 0],
@@ -78,25 +87,31 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
 
           {/* Floating particles */}
           {!isMobile &&
-            Array.from({ length: 15 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute z-0 w-1 h-1 rounded-full bg-cyan-400/40"
-                initial={{
-                  x: Math.random() * window.innerWidth,
-                  y: Math.random() * window.innerHeight,
-                }}
-                animate={{
-                  y: [0, -200, 0],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 5 + Math.random() * 5,
-                  repeat: Infinity,
-                  delay: Math.random() * 2,
-                }}
-              />
-            ))}
+            Array.from({ length: 15 }).map((_, i) => {
+              const isBlue = i % 2 === 0;
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute z-0 w-1 h-1 rounded-full"
+                  style={{
+                    background: isBlue ? "rgba(59, 130, 246, 0.4)" : "rgba(34, 211, 238, 0.4)",
+                  }}
+                  initial={{
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                  }}
+                  animate={{
+                    y: [0, -200, 0],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 5 + Math.random() * 5,
+                    repeat: Infinity,
+                    delay: Math.random() * 2,
+                  }}
+                />
+              );
+            })}
 
           {/* Content wrapper */}
           <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-8">
@@ -107,11 +122,11 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
               transition={{ delay: 0.2, duration: 0.8 }}
               className="flex items-center justify-center space-x-2"
             >
-              <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
-              <p className="font-mono text-xs sm:text-sm text-cyan-400 tracking-[0.3em] uppercase font-semibold">
+              <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-400 via-blue-400 to-transparent" />
+              <p className="font-mono text-xs sm:text-sm bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 text-transparent bg-clip-text tracking-[0.3em] uppercase font-semibold">
                 APEX TECHNO WARRIORS
               </p>
-              <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
+              <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-400 via-blue-400 to-transparent" />
             </motion.div>
 
             {/* Main Title */}
@@ -151,23 +166,24 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              whileHover={{ scale: 1.08, boxShadow: "0 0 30px rgba(34, 211, 238, 0.6)" }}
+              whileHover={{ scale: 1.08, boxShadow: "0 0 30px rgba(34, 211, 238, 0.8)" }}
               whileTap={{ scale: 0.95 }}
               className="relative group mt-8 px-8 sm:px-12 py-4 sm:py-5 font-mono text-sm sm:text-base font-bold tracking-[0.2em] uppercase
-                border-2 border-cyan-400 rounded-md
-                bg-gradient-to-r from-cyan-500/10 to-cyan-400/10
-                text-cyan-300 transition-all duration-300
+                border-2 border-transparent rounded-md
+                bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-cyan-500/10
+                transition-all duration-300
                 overflow-hidden"
+              style={{
+                backgroundImage: "linear-gradient(to right, rgba(34, 211, 238, 0.1), rgba(59, 130, 246, 0.1), rgba(34, 211, 238, 0.1))",
+                borderImage: "linear-gradient(to right, #06b6d4, #3b82f6, #06b6d4) 1",
+              }}
             >
-              {/* Animated background */}
-              <div className="absolute inset-0 z-0 bg-gradient-to-r from-cyan-600/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
               {/* Animated border glow */}
-              <div className="absolute inset-0 z-0 rounded-md bg-gradient-to-r from-cyan-400/0 via-cyan-400/50 to-cyan-400/0 opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+              <div className="absolute inset-0 z-0 rounded-md bg-gradient-to-r from-cyan-400/0 via-blue-400/30 to-cyan-400/0 opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
 
-              <span className="relative z-10 flex items-center justify-center space-x-3">
+              <span className="relative z-10 flex items-center justify-center space-x-3 bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 text-transparent bg-clip-text">
                 <span>REGISTER NOW</span>
-                <span className="text-lg">→</span>
+                <span className="text-lg text-cyan-400">→</span>
               </span>
             </motion.button>
 
@@ -176,7 +192,7 @@ const HeroScreen = ({ onUnlock }: HeroScreenProps) => {
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 1, duration: 0.8 }}
-              className="w-32 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent mt-4"
+              className="w-32 h-px bg-gradient-to-r from-transparent via-cyan-400 via-blue-400 to-transparent mt-4"
             />
           </div>
         </section>
