@@ -1,6 +1,7 @@
 export interface Event {
   id: string;
   name: string;
+  description: string;
   limit: number;
   schedule: Array<{
     time: string;
@@ -14,6 +15,7 @@ export const EVENTS: Event[] = [
   {
     id: "1",
     name: "Quantum Hackathon",
+    description: "Initialize your 48-hour build protocol. This flagship hackathon brings together the brightest nodes to solve quantum complexities and develop disruptive neural solutions. Reward nodes include $500K in cryptographic prizes and direct VC uplink.",
     limit: 4,
     schedule: [
       { time: "09:00", title: "GATES OPEN", desc: "Registration & neural sync", day: "DAY 1" },
@@ -29,6 +31,7 @@ export const EVENTS: Event[] = [
   {
     id: "2",
     name: "AI Ethics Panel",
+    description: "Deep-dive session into the ethics of Artificial General Intelligence. Join industry pioneers and philosophers as we dissect the moral fiber of silicon consciousness and the governance of decentralized neural networks.",
     limit: 1,
     schedule: [
       { time: "09:00", title: "CHECK-IN", desc: "Panel registration", day: "DAY 1" },
@@ -41,6 +44,7 @@ export const EVENTS: Event[] = [
   {
     id: "3",
     name: "Neural Sync Workshop",
+    description: "Practical hands-on sync protocol for building and fine-tuning large-scale model architectures. From zero-knowledge foundations to complex transformer optimizations, synchronize your skill-node with the latest tech stack.",
     limit: 2,
     schedule: [
       { time: "09:00", title: "WELCOME", desc: "Workshop introduction", day: "DAY 1" },
@@ -54,6 +58,7 @@ export const EVENTS: Event[] = [
   {
     id: "4",
     name: "Cyber Defense Sprint",
+    description: "Stress-test your defense protocols in this 72-hour security challenge. Identify zero-day vulnerabilities, mitigate distributed neural attacks, and protect the Apex mainframe from malicious external subroutines.",
     limit: 3,
     schedule: [
       { time: "08:00", title: "BRIEFING", desc: "Security challenge overview", day: "DAY 1" },

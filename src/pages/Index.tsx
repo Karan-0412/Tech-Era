@@ -9,10 +9,12 @@ import SpeakerCarousel from "@/components/SpeakerCarousel";
 import TeamSection from "@/components/TeamSection";
 import ScheduleTimeline from "@/components/ScheduleTimeline";
 import TerminalFooter from "@/components/TerminalFooter";
+import TerminalOverlay from "@/components/TerminalOverlay";
 
 const Index = () => {
   const [booted, setBooted] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   const handleBootComplete = useCallback(() => setBooted(true), []);
   const handleUnlock = useCallback(() => setUnlocked(true), []);
@@ -34,22 +36,23 @@ const Index = () => {
               {!unlocked && <HeroScreen onUnlock={handleUnlock} />}
               {unlocked && (
                 <>
-                  <MissionBriefing visible={unlocked} />
+                  <MissionBriefing visible={unlocked} onRegister={() => setTerminalOpen(true)} />
                   <AboutSection />
                   <div id="speakers">
                     <SpeakerCarousel />
                   </div>
-                  <TeamSection />
+                  <TeamSection onRegister={() => setTerminalOpen(true)} />
                   <div id="schedule">
                     <ScheduleTimeline />
                   </div>
-                  <TerminalFooter />
+                  <TerminalFooter onOpenTerminal={() => setTerminalOpen(true)} />
                 </>
               )}
             </main>
           </motion.div>
         )}
       </AnimatePresence>
+      <TerminalOverlay open={terminalOpen} onClose={() => setTerminalOpen(false)} />
     </div>
   );
 };

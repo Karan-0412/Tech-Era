@@ -44,7 +44,7 @@ const useAutoType = (text: string, onDone: () => void, active: boolean) => {
       }
     }, AUTO_TYPE_SPEED);
     return () => clearInterval(interval);
-  }, [text, active]);
+  }, [text, active, onDone]);
 
   return displayed;
 };
@@ -500,6 +500,7 @@ const TerminalOverlay = ({ open, onClose }: TerminalOverlayProps) => {
               }
 
               localStorage.setItem("techEraRegistration", JSON.stringify(registrationData));
+              window.dispatchEvent(new Event("registrationUpdate"));
 
               const memberCount = teamMembers.length;
               toast({
